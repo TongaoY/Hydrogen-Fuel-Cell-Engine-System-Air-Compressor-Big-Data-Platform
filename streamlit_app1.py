@@ -19,7 +19,7 @@ from sklearn.preprocessing import StandardScaler
 from matplotlib.patches import Rectangle
 import plotly.figure_factory as ff
 from bokeh.plotting import figure, show
-from bokeh.sampledata.penguins import data
+from bokeh.sampledata.penguins import data as data1
 from bokeh.transform import factor_cmap, factor_mark
 from openai import OpenAI
 
@@ -504,7 +504,7 @@ with tabs[0]:
             opacity = 0.6
 
             # 准备数据
-            SPECIES = sorted(data.species.unique())
+            SPECIES = sorted(data1.species.unique())
             MARKERS = ['hex', 'circle_x', 'triangle']
 
             # 创建图表
