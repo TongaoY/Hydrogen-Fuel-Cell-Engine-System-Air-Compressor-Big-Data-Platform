@@ -19,7 +19,7 @@ from sklearn.preprocessing import StandardScaler
 from matplotlib.patches import Rectangle
 import plotly.figure_factory as ff
 from bokeh.plotting import figure, show
-from bokeh.sampledata.penguins import data as data1
+from bokeh.sampledata.penguins import data as data
 from bokeh.transform import factor_cmap, factor_mark
 from openai import OpenAI
 
@@ -336,26 +336,26 @@ with tabs[0]:
                 """,
                 unsafe_allow_html=True
             )
-            df011 = pd.read_excel('./data/data.xlsx', usecols=[61],
-                                  header=None, skiprows=137, nrows=40)
-            df012 = pd.read_excel('./data/data.xlsx', usecols=[61],
-                                  header=None, skiprows=1075, nrows=80)
-            df013 = pd.read_excel('./data/data.xlsx', usecols=[61],
-                                  header=None, skiprows=910, nrows=50)
-            df021 = pd.read_excel('./data/data.xlsx', usecols=[60],
-                                  header=None, skiprows=137, nrows=40)
-            df022 = pd.read_excel('./data/data.xlsx', usecols=[60],
-                                  header=None, skiprows=1075, nrows=80)
-            df023 = pd.read_excel('./data/data.xlsx', usecols=[60],
-                                  header=None, skiprows=910, nrows=50)
-            df031 = pd.read_excel('./data/data.xlsx', usecols=[69],
-                                  header=None, skiprows=137, nrows=40)
-            df032 = pd.read_excel('./data/data.xlsx', usecols=[69],
-                                  header=None, skiprows=1075, nrows=80)
+            df011 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
+                                  header=None, skiprows=137, nrows=53)
+            df012 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
+                                  header=None, skiprows=437, nrows=17)
+            df013 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
+                                  header=None, skiprows=521, nrows=50)
+            df021 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
+                                  header=None, skiprows=137, nrows=53)
+            df022 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
+                                  header=None, skiprows=437, nrows=17)
+            df023 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
+                                  header=None, skiprows=521, nrows=50)
+            df031 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
+                                  header=None, skiprows=137, nrows=53)
+            df032 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
+                                  header=None, skiprows=437, nrows=17)
 
-            df033 = pd.read_excel('./data/data.xlsx', usecols=[69],
-                                  header=None, skiprows=910, nrows=50)
-
+            df033 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
+                                  header=None, skiprows=521, nrows=50)
+            #./data/data.xlsx
             # 合并数据并转换为一维数组
             df01 = pd.concat([df011, df012, df013], ignore_index=True).squeeze()
             df02 = pd.concat([df021, df022, df023], ignore_index=True).squeeze()
@@ -445,57 +445,57 @@ with tabs[0]:
             # usecols=[2] 表示只读取第3列
             # skiprows=4 表示跳过前4行，从第5行开始读取
             # nrows=11 表示读取11行数据（从第5行到第15行）
-            df011 = pd.read_excel('./data/data.xlsx', usecols=[60], header=None, skiprows=575, nrows=100)
-            df012 = pd.read_excel('./data/data.xlsx', usecols=[60], header=None, skiprows=192, nrows=80)
-            df013 = pd.read_excel('./data/data.xlsx', usecols=[60], header=None, skiprows=1008, nrows=60)
-            df021 = pd.read_excel('./data/data.xlsx', usecols=[61], header=None, skiprows=575, nrows=100)
-            df022 = pd.read_excel('./data/data.xlsx', usecols=[61], header=None, skiprows=192, nrows=80)
-            df023 = pd.read_excel('./data/data.xlsx', usecols=[61], header=None, skiprows=1008, nrows=60)
-            df031 = pd.read_excel('./data/data.xlsx', usecols=[66], header=None, skiprows=575, nrows=100)
-            df032 = pd.read_excel('./data/data.xlsx', usecols=[66], header=None, skiprows=192, nrows=80)
-
-            df033 = pd.read_excel('./data/data.xlsx', usecols=[66], header=None, skiprows=1008, nrows=60)
-
-            # 合并数据并转换为一维数组
-            df01 = pd.concat([df011, df012, df013], ignore_index=True).squeeze()
-            df02 = pd.concat([df021, df022, df023], ignore_index=True).squeeze()
-            df03 = pd.concat([df031, df032, df033], ignore_index=True).squeeze()
-
-            print("数据类型:", df01.dtype, df02.dtype, df03.dtype)
-            print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
-            # 检查数据长度和NaN值
-            print("数据长度:", len(df01), len(df02), len(df03))
-            print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
-
-
-            array =df03
-
-
-            value_array = df03  # 或者使用其他颜色数据
-
-            fig = go.Figure(data=[go.Scatter3d(
-                x=df01,
-                y=df02,
-                z=array,
-                mode='markers',
-                marker=dict(
-                    size=12,
-                    color=array,  # set color to an array/list of desired values
-                    colorscale='Viridis',  # choose a colorscale
-                    opacity=0.8
-                )
-            )])
-
-            fig.update_layout(scene=dict(
-                    zaxis=dict(showbackground=False,title="压缩比"),
-                    xaxis=dict(title="转速r/min",),
-                    yaxis=dict(title="质量流量g/s"),
-                    aspectmode="manual",
-                    aspectratio=dict(x=2, y=1, z=0.5),
-                ),
-                width=280,  # 设置图表宽度，略小于容器宽度以考虑内边距
-                height=230,  # 设置图表高度，略小于容器高度以考虑标题和内边距
-                margin=dict(l=0, r=0, b=0, t=0),template="plotly_dark", ) # 暗色主题
+            # df011 = pd.read_excel('./data/data.xlsx', usecols=[60], header=None, skiprows=575, nrows=100)
+            # df012 = pd.read_excel('./data/data.xlsx', usecols=[60], header=None, skiprows=192, nrows=80)
+            # df013 = pd.read_excel('./data/data.xlsx', usecols=[60], header=None, skiprows=1008, nrows=60)
+            # df021 = pd.read_excel('./data/data.xlsx', usecols=[61], header=None, skiprows=575, nrows=100)
+            # df022 = pd.read_excel('./data/data.xlsx', usecols=[61], header=None, skiprows=192, nrows=80)
+            # df023 = pd.read_excel('./data/data.xlsx', usecols=[61], header=None, skiprows=1008, nrows=60)
+            # df031 = pd.read_excel('./data/data.xlsx', usecols=[66], header=None, skiprows=575, nrows=100)
+            # df032 = pd.read_excel('./data/data.xlsx', usecols=[66], header=None, skiprows=192, nrows=80)
+            #
+            # df033 = pd.read_excel('./data/data.xlsx', usecols=[66], header=None, skiprows=1008, nrows=60)
+            #
+            # # 合并数据并转换为一维数组
+            # df01 = pd.concat([df011, df012, df013], ignore_index=True).squeeze()
+            # df02 = pd.concat([df021, df022, df023], ignore_index=True).squeeze()
+            # df03 = pd.concat([df031, df032, df033], ignore_index=True).squeeze()
+            #
+            # print("数据类型:", df01.dtype, df02.dtype, df03.dtype)
+            # print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
+            # # 检查数据长度和NaN值
+            # print("数据长度:", len(df01), len(df02), len(df03))
+            # print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
+            #
+            #
+            # array =df03
+            #
+            #
+            # value_array = df03  # 或者使用其他颜色数据
+            #
+            # fig = go.Figure(data=[go.Scatter3d(
+            #     x=df01,
+            #     y=df02,
+            #     z=array,
+            #     mode='markers',
+            #     marker=dict(
+            #         size=12,
+            #         color=array,  # set color to an array/list of desired values
+            #         colorscale='Viridis',  # choose a colorscale
+            #         opacity=0.8
+            #     )
+            # )])
+            #
+            # fig.update_layout(scene=dict(
+            #         zaxis=dict(showbackground=False,title="压缩比"),
+            #         xaxis=dict(title="转速r/min",),
+            #         yaxis=dict(title="质量流量g/s"),
+            #         aspectmode="manual",
+            #         aspectratio=dict(x=2, y=1, z=0.5),
+            #     ),
+            #     width=280,  # 设置图表宽度，略小于容器宽度以考虑内边距
+            #     height=230,  # 设置图表高度，略小于容器高度以考虑标题和内边距
+            #     margin=dict(l=0, r=0, b=0, t=0),template="plotly_dark", ) # 暗色主题
 
 
 
@@ -504,7 +504,7 @@ with tabs[0]:
             opacity = 0.6
 
             # 准备数据
-            SPECIES = sorted(data1.species.unique())
+            SPECIES = sorted(data.species.unique())
             MARKERS = ['hex', 'circle_x', 'triangle']
 
             # 创建图表
@@ -655,7 +655,7 @@ with tabs[1]:
                         </style>
                         <body>
                             <div class="custom-container6">
-                            <h1 class="title7">数据录入</h1>
+                            <h1 class="title1">数据录入</h1>
                             </div>
         
                         </body>
@@ -953,7 +953,7 @@ with tabs[1]:
                 st.write("You selected:", genre)
                 if genre == "Pearson":
 
-                    # 计算相关系数矩阵，包含了任意两个菜品间的相关系数
+                    # 计算相关系数矩阵
                     print('几种变量的相关系数矩阵为：\n', df_clean.corr(method='pearson'))
                     st.write('几种变量的相关系数矩阵为：\n', df_clean.corr(method='pearson'))
                     #绘制热力图
@@ -972,7 +972,7 @@ with tabs[1]:
                     plt.show()
                     st.pyplot(fig)
                 elif genre == "Spearman ":
-                    # 计算相关系数矩阵，包含了任意两个菜品间的相关系数
+                    # 计算相关系数矩阵
                     print('几种变量的相关系数矩阵为：\n', df_clean.corr(method='spearman'))
                     st.write('几种变量的相关系数矩阵为：\n', df_clean.corr(method='spearman'))
                     # 绘制热力图
@@ -1843,66 +1843,65 @@ with tabs[1]:
 
 
 
-with tabs[2]:
-# elif st.session_state.selected == '数据收录':
-    image1 = Image.open("pic/1")  # 替换为您的图片路径
-    st.image(image1, width=1200)
-    image2= Image.open("pic/2")  # 替换为您的图片路径
-    st.image(image2, width=1200)
-    image3 = Image.open("pic/3")  # 替换为您的图片路径
-    st.image(image3, width=1200)
-    image4 = Image.open("pic/4.png")  # 替换为您的图片路径
-    st.image(image4, width=1200)
-    image5 = Image.open("pic/5.png")  # 替换为您的图片路径
-    st.image(image5, width=1200)
-    image6 = Image.open("pic/6.png")  # 替换为您的图片路径
-    st.image(image6, width=1200)
-    image7 = Image.open("pic/7.png")  # 替换为您的图片路径
-    st.image(image7, width=1200)
-    image8 = Image.open("pic/8.png")  # 替换为您的图片路径
-    st.image(image8, width=1200)
-    image9 = Image.open("pic/9.png")  # 替换为您的图片路径
-    st.image(image9, width=1200)
-    image10 = Image.open("pic/10.png")  # 替换为您的图片路径
-    st.image(image10, width=1200)
-    image11 = Image.open("pic/11.png")  # 替换为您的图片路径
-    st.image(image11, width=1200)
-    image12 = Image.open("pic/12.png")  # 替换为您的图片路径
-    st.image(image12, width=1200)
-    image13 = Image.open("pic/13.png")  # 替换为您的图片路径
-    st.image(image13, width=1200)
-    image14 = Image.open("pic/14.png")  # 替换为您的图片路径
-    st.image(image14, width=1200)
-    image15 = Image.open("pic/15.png")  # 替换为您的图片路径
-    st.image(image15, width=1200)
-    image16 = Image.open("pic/16.png")  # 替换为您的图片路径
-    st.image(image16, width=1200)
-    image17 = Image.open("pic/17.png")  # 替换为您的图片路径
-    st.image(image17, width=1200)
-    image18 = Image.open("pic/18.png")  # 替换为您的图片路径
-    st.image(image18, width=1200)
-    image19 = Image.open("pic/19.png")  # 替换为您的图片路径
-    st.image(image19, width=1200)
-    image20 = Image.open("pic/20.png")  # 替换为您的图片路径
-    st.image(image20, width=1200)
-    image21 = Image.open("pic/21.png")  # 替换为您的图片路径
-    st.image(image21, width=1200)
-    image22 = Image.open("pic/22.png")  # 替换为您的图片路径
-    st.image(image22, width=1200)
-    image23 = Image.open("pic/23.png")  # 替换为您的图片路径
-    st.image(image23, width=1200)
-    image24 = Image.open("pic/24.png")  # 替换为您的图片路径
-    st.image(image24, width=1200)
-    image25 = Image.open("pic/25.png")  # 替换为您的图片路径
-    st.image(image25, width=1200)
-    image26 = Image.open("pic/26.png")  # 替换为您的图片路径
-    st.image(image26, width=1200)
-    image27 = Image.open("pic/27.png")  # 替换为您的图片路径
-    st.image(image27, width=1200)
-    image28 = Image.open("pic/28.png")  # 替换为您的图片路径
-    st.image(image28, width=1200)
-    image29 = Image.open("pic/29.png")  # 替换为您的图片路径
-    st.image(image29, width=1200)
+# with tabs[2]:
+#     image1 = Image.open("pic/1")  # 替换为您的图片路径
+#     st.image(image1, width=1200)
+#     image2= Image.open("pic/2")  # 替换为您的图片路径
+#     st.image(image2, width=1200)
+#     image3 = Image.open("pic/3")  # 替换为您的图片路径
+#     st.image(image3, width=1200)
+#     image4 = Image.open("pic/4.png")  # 替换为您的图片路径
+#     st.image(image4, width=1200)
+#     image5 = Image.open("pic/5.png")  # 替换为您的图片路径
+#     st.image(image5, width=1200)
+#     image6 = Image.open("pic/6.png")  # 替换为您的图片路径
+#     st.image(image6, width=1200)
+#     image7 = Image.open("pic/7.png")  # 替换为您的图片路径
+#     st.image(image7, width=1200)
+#     image8 = Image.open("pic/8.png")  # 替换为您的图片路径
+#     st.image(image8, width=1200)
+#     image9 = Image.open("pic/9.png")  # 替换为您的图片路径
+#     st.image(image9, width=1200)
+#     image10 = Image.open("pic/10.png")  # 替换为您的图片路径
+#     st.image(image10, width=1200)
+#     image11 = Image.open("pic/11.png")  # 替换为您的图片路径
+#     st.image(image11, width=1200)
+#     image12 = Image.open("pic/12.png")  # 替换为您的图片路径
+#     st.image(image12, width=1200)
+#     image13 = Image.open("pic/13.png")  # 替换为您的图片路径
+#     st.image(image13, width=1200)
+#     image14 = Image.open("pic/14.png")  # 替换为您的图片路径
+#     st.image(image14, width=1200)
+#     image15 = Image.open("pic/15.png")  # 替换为您的图片路径
+#     st.image(image15, width=1200)
+#     image16 = Image.open("pic/16.png")  # 替换为您的图片路径
+#     st.image(image16, width=1200)
+#     image17 = Image.open("pic/17.png")  # 替换为您的图片路径
+#     st.image(image17, width=1200)
+#     image18 = Image.open("pic/18.png")  # 替换为您的图片路径
+#     st.image(image18, width=1200)
+#     image19 = Image.open("pic/19.png")  # 替换为您的图片路径
+#     st.image(image19, width=1200)
+#     image20 = Image.open("pic/20.png")  # 替换为您的图片路径
+#     st.image(image20, width=1200)
+#     image21 = Image.open("pic/21.png")  # 替换为您的图片路径
+#     st.image(image21, width=1200)
+#     image22 = Image.open("pic/22.png")  # 替换为您的图片路径
+#     st.image(image22, width=1200)
+#     image23 = Image.open("pic/23.png")  # 替换为您的图片路径
+#     st.image(image23, width=1200)
+#     image24 = Image.open("pic/24.png")  # 替换为您的图片路径
+#     st.image(image24, width=1200)
+#     image25 = Image.open("pic/25.png")  # 替换为您的图片路径
+#     st.image(image25, width=1200)
+#     image26 = Image.open("pic/26.png")  # 替换为您的图片路径
+#     st.image(image26, width=1200)
+#     image27 = Image.open("pic/27.png")  # 替换为您的图片路径
+#     st.image(image27, width=1200)
+#     image28 = Image.open("pic/28.png")  # 替换为您的图片路径
+#     st.image(image28, width=1200)
+#     image29 = Image.open("pic/29.png")  # 替换为您的图片路径
+#     st.image(image29, width=1200)
 
 
 
@@ -1910,228 +1909,58 @@ with tabs[3]:
     # elif st.session_state.selected == 'AI对话':
     # Show title and description.
     # 显示标题和描述
-    st.title("💬 Chatgpt")
+    st.title("💬 DeepSeek")
     st.write(
-        "这是一个简单的聊天机器人，它使用 OpenAI 的 GPT-3.5 模型来生成响应。 "
-        "要使用此应用程序，您需要提供一个 OpenAI API 密钥，您可以在此处获取(https://platform.openai.com/account/api-keys). "
-        "您还可以通过 [遵循我们的教程] 逐步学习如何构建此应用程序 [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
+        "这是一个简单的聊天机器人，它使用 DeepSeek 的 DeepSeek-V3-0324 模型来生成响应。 "
+        "要使用此应用程序，您需要提供一个 DeepSeek API 密钥，您可以在此处获取(https://platform.deepseek.com/api_keys). "
     )
-
-    # 获取用户输入的OpenAI API密钥
-    openai_api_key = st.text_input("OpenAI API Key", type="password")
-
-
-    # 从环境变量获取API密钥
-    API_KEY = os.getenv("OPENAI_API_KEY")  # 或直接替换为您的密钥
-
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
-    proxies = {
-        'http': 'http://127.0.0.1:33210',
-        'https': 'http://127.0.0.1:33210',
-        # 如果需要SOCKS代理，可以使用如下方式
-        # 'http': 'socks5://127.0.0.1:33211',
-        # 'https': 'socks5://127.0.0.1:33211',
-    }
-
-    # response = requests.post(
-    #     "https://api.openai.com/v1/chat/completions",
-    #     headers=headers,
-    #     json={
-    #         "model": "gpt-3.5-turbo",
-    #         "messages": [{"role": "user", "content": "Hello!"}]
-    #     }
-    # )
-    from openai import APIConnectionError
-    openai_api_key="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"
-
-
-
-    client = OpenAI(api_key=openai_api_key)
-
-    if "openai_model" not in st.session_state:
-        st.session_state["openai_model"] = "gpt-3.5-turbo"
-
+    api_key= st.chat_input("请输入DeepSeek API 密钥")
+    # 初始化客户端和会话状态
+    client = OpenAI(api_key=api_key,
+                    base_url="https://api.deepseek.com/v1")  # 注意添加/v1
+    # api_key = "sk-d571ccc1d36942a7a937e14ecd7cb535"
+    # 初始化消息历史
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+    # 显示历史消息
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+            st.markdown(message["content"])  # 使用markdown更好显示格式
 
-    if prompt := st.chat_input("What is up?"):
+    # 聊天输入
+    if prompt := st.chat_input("Say something"):
+        # 添加用户消息到历史并显示
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
+        # 调用API
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=st.session_state.messages
+        )
+
+        # 获取AI回复内容
+        ai_response = response.choices[0].message.content
+
+        # 添加AI回复到历史并显示
+        st.session_state.messages.append({"role": "assistant", "content": ai_response})
         with st.chat_message("assistant"):
-            stream = client.chat.completions.create(
-                model=st.session_state["openai_model"],
-                messages=[
-                    {"role": m["role"], "content": m["content"]}
-                    for m in st.session_state.messages
-                ],
-                stream=True,
-            )
-            response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
-    #
-    # # 使用st.secrets来获取API密钥（如果已存储在secrets中）
-    # # openai_api_key = st.secrets["openai_api_key"]
-    #
-    # # 测试密钥是否有效
-    # try:
-    #     client = OpenAI(api_key=openai_api_key)
-    #     client.models.list()  # 能正常返回说明密钥有效
-    #     st.success("API密钥验证成功！")
-    # except Exception as e:
-    #     st.error(f"密钥验证失败: {str(e)}")
-    #     st.stop()  # 验证失败时停止执行
-    #
-    # # 创建会话状态变量来存储聊天消息
-    # if "messages" not in st.session_state:
-    #     st.session_state.messages = []
-    #
-    # # 显示现有的聊天消息
-    # for message in st.session_state.messages:
-    #     with st.chat_message(message["role"]):
-    #         st.markdown(message["content"])
-    #
-    # # 创建聊天输入字段
-    # if prompt := st.chat_input("What is up?"):
-    #     # 存储并显示当前提示
-    #     st.session_state.messages.append({"role": "user", "content": prompt})
-    #     with st.chat_message("user"):
-    #         st.markdown(prompt)
-    #
-    #     # 使用OpenAI API生成响应
-    #     stream = client.chat.completions.create(
-    #         model="gpt-3.5-turbo",
-    #         messages=[
-    #             {"role": m["role"], "content": m["content"]}
-    #             for m in st.session_state.messages
-    #         ],
-    #         stream=True,
-    #     )
-    #
-    #     # 流式传输响应到聊天并存储在会话状态中
-    #     with st.chat_message("assistant"):
-    #         response = st.write_stream(stream)
-    #     st.session_state.messages.append({"role": "assistant", "content": response})
-    #
-    # # 文件上传部分
-    # uploaded_file = st.file_uploader("请上传.csv文件进行分析", type="csv")
-    # if uploaded_file is not None:
-    #     # 读取上传的.csv文件
-    #     data = pd.read_csv(uploaded_file)
-    #     st.write(data)
-    #
-    #     # TODO: 在这里添加数据分析和可视化的代码
-    #
-    #     # 示例：显示数据的基本描述统计信息
-    #     st.write(data.describe())
-    #     # Stream the response to the chat using `st.write_stream`, then store it in
-    #     # session state.
-    #     with st.chat_message("assistant"):
-    #         response = st.write_stream(stream)
-    #     st.session_state.messages.append({"role": "assistant", "content": response})
-# # elif st.session_state.selected == 'AI对话':
-#     # Show title and description.
-#     st.title("💬 Chatgpt")
-#     st.write(
-#         "这是一个简单的聊天机器人，它使用 OpenAI 的 GPT-3.5 模型来生成响应。 "
-#         "要使用此应用程序，您需要提供一个 OpenAI API 密钥，您可以在此处获取(https://platform.openai.com/account/api-keys). "
-#         "您还可以通过 [遵循我们的教程] 逐步学习如何构建此应用程序 [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
-#     )
-#
-#     # Ask user for their OpenAI API key via `st.text_input`.
-#     # Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-#     # via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-#     openai_api_key = st.text_input("OpenAI API Key", type="password")
-#
-#     openai_api_key = "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"
-#     # 测试密钥是否有效
-#     try:
-#         client = OpenAI(api_key="您的密钥")
-#         print(client.models.list())  # 能正常返回说明密钥有效
-#     except Exception as e:
-#         print(f"密钥验证失败: {str(e)}")
-#     # Create an OpenAI client.
-#     client = OpenAI(api_key=openai_api_key)
-#
-#     # Create a session state variable to store the chat messages. This ensures that the
-#     # messages persist across reruns.
-#     if "messages" not in st.session_state:
-#         st.session_state.messages = []
-#
-#     # Display the existing chat messages via `st.chat_message`.
-#     for message in st.session_state.messages:
-#         with st.chat_message(message["role"]):
-#             st.markdown(message["content"])
-#
-#     # Create a chat input field to allow the user to enter a message. This will display
-#     # automatically at the bottom of the page.
-#     if prompt := st.chat_input("What is up?"):
-#         # Store and display the current prompt.
-#         st.session_state.messages.append({"role": "user", "content": prompt})
-#         with st.chat_message("user"):
-#             st.markdown(prompt)
-#
-#         # Generate a response using the OpenAI API.
-#         stream = client.chat.completions.create(
-#             model="gpt-3.5-turbo",
-#             messages=[
-#                 {"role": m["role"], "content": m["content"]}
-#                 for m in st.session_state.messages
-#                                                 ],
-#             stream=True,
-#         )
-#
-#         # Stream the response to the chat using `st.write_stream`, then store it in
-#         # session state.
-#         with st.chat_message("assistant"):
-#             response = st.write_stream(stream)
-#         st.session_state.messages.append({"role": "assistant", "content": response})
+            st.markdown(ai_response)
+
+        # 调试打印(可选)
+        st.write(f"Tokens used: {response.usage.total_tokens}")
+
 with tabs[4]:
 # elif st.session_state.selected == '操作示例':
     st.write("这是操作示例页面")
-
-    with st.expander("EDA"):
-        st.write('''
-           EDA（Exploratory Data Analysis，探索性数据分析）是一种数据分析方法，旨在通过统计图表、数据可视化以及计算某些度量来总结数据的主要特征。EDA的核心目的是帮助分析师更好地理解数据集，发现数据中的模式、关系、异常以及潜在的洞察。它通常是在进行更正式的统计建模或假设检验之前的初步步骤，为后续的数据处理和分析工作提供方向。
-
-EDA流程：
-
-数据导入与清洗：导入数据：首先，将数据从原始来源（如数据库、CSV文件等）导入到分析环境中。
-数据清洗：检查并处理缺失值、异常值、重复记录和不一致的数据类型。这一步骤对于确保分析结果的准确性至关重要。
-数据概览：数据概览：通过查看数据的前几行、统计摘要（如均值、中位数、标准差等）和数据类型，对数据集有一个初步的了解。
-变量分析：对每个变量进行单独的描述性统计分析，了解其分布特征。
-数据可视化：可视化分布：使用直方图、密度图、箱线图等来观察单个变量的分布情况。关系分析：利用散点图、相关系数矩阵、热力图等来探索变量之间的关系。时间序列分析：如果数据集包含时间变量，可以使用时间序列图来观察数据随时间的变化趋势。
-假设生成：基于可视化和统计分析的结果，生成关于数据背后可能存在的模式或关系的假设。这些假设将为后续的统计分析或机器学习模型提供研究方向。
-特征工程：根据EDA的结果，创建新的特征变量或转换现有变量，以提高模型的性能。特征选择：识别对预测目标最有影响力的变量，排除不相关或冗余的特征。
-文档与报告：记录EDA过程中的发现、假设以及任何观察到的数据质量问题。编写报告或演示文稿，将EDA的结果和结论分享给项目团队或利益相关者。
-        ''')
-        st.image("https://static.streamlit.io/examples/dice.jpg")
-    with st.expander("分类"):
-        st.image("https://static.streamlit.io/examples/dice.jpg")
-    with st.expander("回归"):
-        st.write('''
-           EDA（Exploratory Data Analysis，探索性数据分析）是一种数据分析方法，旨在通过统计图表、数据可视化以及计算某些度量来总结数据的主要特征。EDA的核心目的是帮助分析师更好地理解数据集，发现数据中的模式、关系、异常以及潜在的洞察。它通常是在进行更正式的统计建模或假设检验之前的初步步骤，为后续的数据处理和分析工作提供方向。
-
-EDA流程：
-
-数据导入与清洗：导入数据：首先，将数据从原始来源（如数据库、CSV文件等）导入到分析环境中。
-数据清洗：检查并处理缺失值、异常值、重复记录和不一致的数据类型。这一步骤对于确保分析结果的准确性至关重要。
-数据概览：数据概览：通过查看数据的前几行、统计摘要（如均值、中位数、标准差等）和数据类型，对数据集有一个初步的了解。
-变量分析：对每个变量进行单独的描述性统计分析，了解其分布特征。
-数据可视化：可视化分布：使用直方图、密度图、箱线图等来观察单个变量的分布情况。关系分析：利用散点图、相关系数矩阵、热力图等来探索变量之间的关系。时间序列分析：如果数据集包含时间变量，可以使用时间序列图来观察数据随时间的变化趋势。
-假设生成：基于可视化和统计分析的结果，生成关于数据背后可能存在的模式或关系的假设。这些假设将为后续的统计分析或机器学习模型提供研究方向。
-特征工程：根据EDA的结果，创建新的特征变量或转换现有变量，以提高模型的性能。特征选择：识别对预测目标最有影响力的变量，排除不相关或冗余的特征。
-文档与报告：记录EDA过程中的发现、假设以及任何观察到的数据质量问题。编写报告或演示文稿，将EDA的结果和结论分享给项目团队或利益相关者。
-        ''')
-        st.image("https://static.streamlit.io/examples/dice.jpg")
-
-
+    image1 = Image.open("pic/30")  # 替换为您的图片路径
+    st.image(image1, width=1200)
+    image2= Image.open("pic/31")  # 替换为您的图片路径
+    st.image(image2, width=1200)
+    image3 = Image.open("pic/32")  # 替换为您的图片路径
+    st.image(image3, width=1200)
+    image4 = Image.open("pic/33")  # 替换为您的图片路径
+    st.image(image4, width=1200)
 
