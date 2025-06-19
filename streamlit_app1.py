@@ -475,39 +475,9 @@ with tabs[0]:
 
             array = df03
 
-            # n = len(df03)
-            # # 创建一个全为 np.nan 的二维数组
-            # array = np.full((n, n), 0.000)
-            # # 将对角线上的值填充为一维数组中的值
-            # np.fill_diagonal(array, df03)
-            # # array = np.diag(df03)  # 更简洁，效果相同
-            # # 模拟地形（随机高度）
-            # elevation = np.random.rand(*lat_grid.shape) * 0.1  # 轻微高度变化
-            # st.write(array)
-            # st.write(elevation)
-            # # 使用 Plotly 创建 3D 地球
             value_array = df03  # 或者使用其他颜色数据
 
-            # fig = go.Figure(
-            #     go.Scatter3d(
-            #         z=array,
-            #         x=df01,
-            #         y=df02,
-            #         # colorscale="Viridis",
-            #         # showscale=True,
-            #         mode='markers',
-            #         opacity=0.8,
-            #         hoverinfo="skip",
-            #         marker=dict(
-            #             size=500,
-            #             color = value_array,  # 设置颜色值
-            #             colorscale="Viridis",  # 使用与曲面图相同的颜色映射
-            #             opacity=0.8,
-            #             showscale=True,  # 显示颜色条
-            #             colorbar=dict(title="压缩比")
-            #         ),
-            #     )
-            # )
+
             fig = go.Figure(data=[go.Scatter3d(
                 x=df01,
                 y=df02,
@@ -520,21 +490,7 @@ with tabs[0]:
                     opacity=0.8
                 )
             )])
-            # # 设置地球样式
-            # fig.update_layout(
-            #     scene=dict(
-            #         zaxis=dict(showbackground=False, title="压缩比",range=[0, 5]),
-            #         xaxis=dict(title="转速r/min", range=[0, 100000]),
-            #         yaxis=dict(title="质量流量g/s", range=[0, 200]),
-            #         aspectmode="manual",
-            #         aspectratio=dict(x=2, y=1, z=0.5),
-            #     ),
-            #     margin=dict(l=0, r=0, b=0, t=0),
-            #     template="plotly_dark",  # 暗色主题
-            # )
-            #
-            # # 在 Streamlit 中显示
-            # st.plotly_chart(fig, use_container_width=True)
+
             fig.update_layout(scene=dict(
                 zaxis=dict(showbackground=False, title="压缩比"),
                 xaxis=dict(title="转速r/min", ),
@@ -545,28 +501,7 @@ with tabs[0]:
                 width=280,  # 设置图表宽度，略小于容器宽度以考虑内边距
                 height=230,  # 设置图表高度，略小于容器高度以考虑标题和内边距
                 margin=dict(l=0, r=0, b=0, t=0), template="plotly_dark", )  # 暗色主题
-            # st.plotly_chart(fig, use_container_width=True, height=100)
-
-            # all_columns = df.columns.tolist()
-            #
-            # # 创建双列布局
-            # col1, col2 = st.columns(2)
-            # with col1:
-            #     title1 = st.selectbox("请选择x轴的列", all_columns,
-            #                           index=all_columns.index("叶顶间隙") if "叶顶间隙" in all_columns else 0)
-            # with col2:
-            #     title2 = st.selectbox("请选择y轴的列", all_columns,
-            #                           index=all_columns.index("压缩比") if "压缩比" in all_columns else 0)
-            #             # 2. 立即执行数据清洗（关键修改点！）
-            # cols_to_check = [title1, title2]
-            # df_clean = df.copy()
-            # df_clean[cols_to_check] = df_clean[cols_to_check].apply(pd.to_numeric, errors='coerce')
-            # df_clean = df_clean.dropna(subset=cols_to_check)
-            #
-            # # 检查有效数据量
-            # if len(df_clean) == 0:
-            #     st.error("错误：选择的两列没有有效的数值数据！")
-            #     st.stop()  # 停止执行后续代码
+        
             from bokeh.plotting import figure, show
             from bokeh.sampledata.penguins import data
             from bokeh.transform import factor_cmap, factor_mark
