@@ -336,64 +336,64 @@ with tabs[0]:
                 """,
                 unsafe_allow_html=True
             )
-            # df011 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
-            #                       header=None, skiprows=137, nrows=53)
-            # df012 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
-            #                       header=None, skiprows=437, nrows=17)
-            # df013 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
-            #                       header=None, skiprows=521, nrows=50)
-            # df021 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
-            #                       header=None, skiprows=137, nrows=53)
-            # df022 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
-            #                       header=None, skiprows=437, nrows=17)
-            # df023 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
-            #                       header=None, skiprows=521, nrows=50)
-            # df031 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
-            #                       header=None, skiprows=137, nrows=53)
-            # df032 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
-            #                       header=None, skiprows=437, nrows=17)
-            #
-            # df033 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
-            #                       header=None, skiprows=521, nrows=50)
-            # #./data/data.xlsx
-            # # 合并数据并转换为一维数组
-            # df01 = pd.concat([df011, df012, df013], ignore_index=True).squeeze()
-            # df02 = pd.concat([df021, df022, df023], ignore_index=True).squeeze()
-            # df03 = pd.concat([df031, df032, df033], ignore_index=True).squeeze()
-            #
-            # print("数据类型:", df01.dtype, df02.dtype, df03.dtype)
-            # print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
-            # # 检查数据长度和NaN值
-            # print("数据长度:", len(df01), len(df02), len(df03))
-            # print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
-            #
-            # array = df03
-            # value_array = df03  # 或者使用其他颜色数据
-            #
-            # fig = go.Figure(data=[go.Scatter3d(
-            #     x=df01,
-            #     y=df02,
-            #     z=array,
-            #     mode='markers',
-            #     marker=dict(
-            #         size=12,
-            #         color=array,  # set color to an array/list of desired values
-            #         colorscale='Viridis',  # choose a colorscale
-            #         opacity=0.8
-            #     )
-            # )])
-            #
-            # fig.update_layout(scene=dict(
-            #     zaxis=dict(showbackground=False, title="等熵效率"),
-            #     xaxis=dict(title="转速r/min", ),
-            #     yaxis=dict(title="质量流量g/s"),
-            #     aspectmode="manual",
-            #     aspectratio=dict(x=2, y=1, z=0.5),
-            # ),
-            #     width=500,  # 设置图表宽度，略小于容器宽度以考虑内边距
-            #     height=450,  # 设置图表高度，略小于容器高度以考虑标题和内边距
-            #     margin=dict(l=0, r=0, b=0, t=0), template="plotly_dark", )  # 暗色主题
-            # st.plotly_chart(fig, use_container_width=True, height=450)
+            df011 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
+                                  header=None, skiprows=137, nrows=53)
+            df012 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
+                                  header=None, skiprows=437, nrows=17)
+            df013 = pd.read_excel('./data1/data1.xlsx', usecols=[61],
+                                  header=None, skiprows=521, nrows=50)
+            df021 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
+                                  header=None, skiprows=137, nrows=53)
+            df022 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
+                                  header=None, skiprows=437, nrows=17)
+            df023 = pd.read_excel('./data1/data1.xlsx', usecols=[60],
+                                  header=None, skiprows=521, nrows=50)
+            df031 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
+                                  header=None, skiprows=137, nrows=53)
+            df032 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
+                                  header=None, skiprows=437, nrows=17)
+
+            df033 = pd.read_excel('./data1/data1.xlsx', usecols=[70],
+                                  header=None, skiprows=521, nrows=50)
+            #./data/data.xlsx
+            # 合并数据并转换为一维数组
+            df01 = pd.concat([df011, df012, df013], ignore_index=True).squeeze()
+            df02 = pd.concat([df021, df022, df023], ignore_index=True).squeeze()
+            df03 = pd.concat([df031, df032, df033], ignore_index=True).squeeze()
+
+            print("数据类型:", df01.dtype, df02.dtype, df03.dtype)
+            print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
+            # 检查数据长度和NaN值
+            print("数据长度:", len(df01), len(df02), len(df03))
+            print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
+
+            array = df03
+            value_array = df03  # 或者使用其他颜色数据
+
+            fig = go.Figure(data=[go.Scatter3d(
+                x=df01,
+                y=df02,
+                z=array,
+                mode='markers',
+                marker=dict(
+                    size=12,
+                    color=array,  # set color to an array/list of desired values
+                    colorscale='Viridis',  # choose a colorscale
+                    opacity=0.8
+                )
+            )])
+
+            fig.update_layout(scene=dict(
+                zaxis=dict(showbackground=False, title="等熵效率"),
+                xaxis=dict(title="转速r/min", ),
+                yaxis=dict(title="质量流量g/s"),
+                aspectmode="manual",
+                aspectratio=dict(x=2, y=1, z=0.5),
+            ),
+                width=500,  # 设置图表宽度，略小于容器宽度以考虑内边距
+                height=450,  # 设置图表高度，略小于容器高度以考虑标题和内边距
+                margin=dict(l=0, r=0, b=0, t=0), template="plotly_dark", )  # 暗色主题
+            st.plotly_chart(fig, use_container_width=True, height=450)
 
 
     # 在右侧列填充内容
@@ -1846,11 +1846,11 @@ with tabs[1]:
 
 
 with tabs[2]:
-    image1 = Image.open("pic/1")  # 替换为您的图片路径
+    image1 = Image.open("pic/1.png")  # 替换为您的图片路径
     st.image(image1, width=1200)
-    image2= Image.open("pic/2")  # 替换为您的图片路径
+    image2= Image.open("pic/2.png")  # 替换为您的图片路径
     st.image(image2, width=1200)
-    image3 = Image.open("pic/3")  # 替换为您的图片路径
+    image3 = Image.open("pic/3.png")  # 替换为您的图片路径
     st.image(image3, width=1200)
     image4 = Image.open("pic/4.png")  # 替换为您的图片路径
     st.image(image4, width=1200)
@@ -1957,12 +1957,12 @@ with tabs[3]:
 with tabs[4]:
 # elif st.session_state.selected == '操作示例':
     st.write("这是操作示例页面")
-    image1 = Image.open("pic/30")  # 替换为您的图片路径
+    image1 = Image.open("pic/30.png")  # 替换为您的图片路径
     st.image(image1, width=1200)
-    image2= Image.open("pic/31")  # 替换为您的图片路径
+    image2= Image.open("pic/31.png")  # 替换为您的图片路径
     st.image(image2, width=1200)
-    image3 = Image.open("pic/32")  # 替换为您的图片路径
+    image3 = Image.open("pic/32.png")  # 替换为您的图片路径
     st.image(image3, width=1200)
-    image4 = Image.open("pic/33")  # 替换为您的图片路径
+    image4 = Image.open("pic/33.png")  # 替换为您的图片路径
     st.image(image4, width=1200)
 
