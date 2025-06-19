@@ -501,7 +501,7 @@ with tabs[0]:
                 width=280,  # 设置图表宽度，略小于容器宽度以考虑内边距
                 height=230,  # 设置图表高度，略小于容器高度以考虑标题和内边距
                 margin=dict(l=0, r=0, b=0, t=0), template="plotly_dark", )  # 暗色主题
-        
+
             from bokeh.plotting import figure, show
             from bokeh.sampledata.penguins import data
             from bokeh.transform import factor_cmap, factor_mark
@@ -517,12 +517,7 @@ with tabs[0]:
             # 创建图表
             p = figure(
                 title="",
-                tools="pan,wheel_zoom,box_zoom,reset,save,hover",
-                tooltips=[
-                    ("种类", "@species"),
-                    ("", "@flipper_length_mm{0.0} mm"),
-                    ("", "@body_mass_g{0} g")
-                ],
+                tools="pan,wheel_zoom,box_zoom,reset,save,hove",
                 background_fill_color=None,  # 设置背景为透明
                 border_fill_color=None,  # 设置边框填充为透明
                 width=200,
@@ -1850,65 +1845,65 @@ with tabs[1]:
 
 
 
-# with tabs[2]:
-#     image1 = Image.open("pic/1")  # 替换为您的图片路径
-#     st.image(image1, width=1200)
-#     image2= Image.open("pic/2")  # 替换为您的图片路径
-#     st.image(image2, width=1200)
-#     image3 = Image.open("pic/3")  # 替换为您的图片路径
-#     st.image(image3, width=1200)
-#     image4 = Image.open("pic/4.png")  # 替换为您的图片路径
-#     st.image(image4, width=1200)
-#     image5 = Image.open("pic/5.png")  # 替换为您的图片路径
-#     st.image(image5, width=1200)
-#     image6 = Image.open("pic/6.png")  # 替换为您的图片路径
-#     st.image(image6, width=1200)
-#     image7 = Image.open("pic/7.png")  # 替换为您的图片路径
-#     st.image(image7, width=1200)
-#     image8 = Image.open("pic/8.png")  # 替换为您的图片路径
-#     st.image(image8, width=1200)
-#     image9 = Image.open("pic/9.png")  # 替换为您的图片路径
-#     st.image(image9, width=1200)
-#     image10 = Image.open("pic/10.png")  # 替换为您的图片路径
-#     st.image(image10, width=1200)
-#     image11 = Image.open("pic/11.png")  # 替换为您的图片路径
-#     st.image(image11, width=1200)
-#     image12 = Image.open("pic/12.png")  # 替换为您的图片路径
-#     st.image(image12, width=1200)
-#     image13 = Image.open("pic/13.png")  # 替换为您的图片路径
-#     st.image(image13, width=1200)
-#     image14 = Image.open("pic/14.png")  # 替换为您的图片路径
-#     st.image(image14, width=1200)
-#     image15 = Image.open("pic/15.png")  # 替换为您的图片路径
-#     st.image(image15, width=1200)
-#     image16 = Image.open("pic/16.png")  # 替换为您的图片路径
-#     st.image(image16, width=1200)
-#     image17 = Image.open("pic/17.png")  # 替换为您的图片路径
-#     st.image(image17, width=1200)
-#     image18 = Image.open("pic/18.png")  # 替换为您的图片路径
-#     st.image(image18, width=1200)
-#     image19 = Image.open("pic/19.png")  # 替换为您的图片路径
-#     st.image(image19, width=1200)
-#     image20 = Image.open("pic/20.png")  # 替换为您的图片路径
-#     st.image(image20, width=1200)
-#     image21 = Image.open("pic/21.png")  # 替换为您的图片路径
-#     st.image(image21, width=1200)
-#     image22 = Image.open("pic/22.png")  # 替换为您的图片路径
-#     st.image(image22, width=1200)
-#     image23 = Image.open("pic/23.png")  # 替换为您的图片路径
-#     st.image(image23, width=1200)
-#     image24 = Image.open("pic/24.png")  # 替换为您的图片路径
-#     st.image(image24, width=1200)
-#     image25 = Image.open("pic/25.png")  # 替换为您的图片路径
-#     st.image(image25, width=1200)
-#     image26 = Image.open("pic/26.png")  # 替换为您的图片路径
-#     st.image(image26, width=1200)
-#     image27 = Image.open("pic/27.png")  # 替换为您的图片路径
-#     st.image(image27, width=1200)
-#     image28 = Image.open("pic/28.png")  # 替换为您的图片路径
-#     st.image(image28, width=1200)
-#     image29 = Image.open("pic/29.png")  # 替换为您的图片路径
-#     st.image(image29, width=1200)
+with tabs[2]:
+    image1 = Image.open("pic/1")  # 替换为您的图片路径
+    st.image(image1, width=1200)
+    image2= Image.open("pic/2")  # 替换为您的图片路径
+    st.image(image2, width=1200)
+    image3 = Image.open("pic/3")  # 替换为您的图片路径
+    st.image(image3, width=1200)
+    image4 = Image.open("pic/4.png")  # 替换为您的图片路径
+    st.image(image4, width=1200)
+    image5 = Image.open("pic/5.png")  # 替换为您的图片路径
+    st.image(image5, width=1200)
+    image6 = Image.open("pic/6.png")  # 替换为您的图片路径
+    st.image(image6, width=1200)
+    image7 = Image.open("pic/7.png")  # 替换为您的图片路径
+    st.image(image7, width=1200)
+    image8 = Image.open("pic/8.png")  # 替换为您的图片路径
+    st.image(image8, width=1200)
+    image9 = Image.open("pic/9.png")  # 替换为您的图片路径
+    st.image(image9, width=1200)
+    image10 = Image.open("pic/10.png")  # 替换为您的图片路径
+    st.image(image10, width=1200)
+    image11 = Image.open("pic/11.png")  # 替换为您的图片路径
+    st.image(image11, width=1200)
+    image12 = Image.open("pic/12.png")  # 替换为您的图片路径
+    st.image(image12, width=1200)
+    image13 = Image.open("pic/13.png")  # 替换为您的图片路径
+    st.image(image13, width=1200)
+    image14 = Image.open("pic/14.png")  # 替换为您的图片路径
+    st.image(image14, width=1200)
+    image15 = Image.open("pic/15.png")  # 替换为您的图片路径
+    st.image(image15, width=1200)
+    image16 = Image.open("pic/16.png")  # 替换为您的图片路径
+    st.image(image16, width=1200)
+    image17 = Image.open("pic/17.png")  # 替换为您的图片路径
+    st.image(image17, width=1200)
+    image18 = Image.open("pic/18.png")  # 替换为您的图片路径
+    st.image(image18, width=1200)
+    image19 = Image.open("pic/19.png")  # 替换为您的图片路径
+    st.image(image19, width=1200)
+    image20 = Image.open("pic/20.png")  # 替换为您的图片路径
+    st.image(image20, width=1200)
+    image21 = Image.open("pic/21.png")  # 替换为您的图片路径
+    st.image(image21, width=1200)
+    image22 = Image.open("pic/22.png")  # 替换为您的图片路径
+    st.image(image22, width=1200)
+    image23 = Image.open("pic/23.png")  # 替换为您的图片路径
+    st.image(image23, width=1200)
+    image24 = Image.open("pic/24.png")  # 替换为您的图片路径
+    st.image(image24, width=1200)
+    image25 = Image.open("pic/25.png")  # 替换为您的图片路径
+    st.image(image25, width=1200)
+    image26 = Image.open("pic/26.png")  # 替换为您的图片路径
+    st.image(image26, width=1200)
+    image27 = Image.open("pic/27.png")  # 替换为您的图片路径
+    st.image(image27, width=1200)
+    image28 = Image.open("pic/28.png")  # 替换为您的图片路径
+    st.image(image28, width=1200)
+    image29 = Image.open("pic/29.png")  # 替换为您的图片路径
+    st.image(image29, width=1200)
 
 
 
