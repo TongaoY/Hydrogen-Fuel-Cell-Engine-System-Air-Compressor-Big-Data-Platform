@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#76d64a"
+backgroundColor = "#08103f"
+secondaryBackgroundColor = "#191c83"
+textColor = "#f5efef"
+font = "sans serif"  # 可选：设置字体
