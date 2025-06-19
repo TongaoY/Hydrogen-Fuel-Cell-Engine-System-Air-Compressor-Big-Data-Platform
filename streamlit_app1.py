@@ -517,7 +517,7 @@ with tabs[0]:
             # 创建图表
             p = figure(
                 title="",
-                tools="pan,wheel_zoom,box_zoom,reset,save,hove",
+                tools="pan,wheel_zoom,box_zoom,reset,save,hover",
                 background_fill_color=None,  # 设置背景为透明
                 border_fill_color=None,  # 设置边框填充为透明
                 width=200,
