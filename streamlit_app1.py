@@ -73,7 +73,7 @@ html_code = """
 
 # 在 Streamlit 中渲染 HTML
 st.markdown(html_code, unsafe_allow_html=True)
-
+''
 # 创建一组选项卡
 tabs = st.tabs(["首页", "数据分析", "趋势分析", "AI对话", "操作示例"])
 
