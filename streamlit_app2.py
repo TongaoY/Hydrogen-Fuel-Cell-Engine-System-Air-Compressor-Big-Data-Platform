@@ -574,10 +574,10 @@ with tabs[0]:
             # --- End of corrected Bokeh plot section ---
 
 
-        with row2[0]:
-            tile1 = st.container(height=270, border=True)  # 创建容器
-        with tile1:
-            # 定义 CSS 样式
+               with row2[0]:
+            tile1 = st.container(height=270, border=True)
+        with tile1: # Now inside the container
+            # --- CSS and Title for "数据库数据类型" ---
             st.markdown(
                 """
                 <style>
@@ -593,7 +593,6 @@ with tabs[0]:
                 """,
                 unsafe_allow_html=True
             )
-
             st.markdown("""
                         <style></style>
                         <body>
@@ -605,172 +604,147 @@ with tabs[0]:
                         unsafe_allow_html=True
                         )
 
+            # --- Data Loading Logic ---
             excel_file_path = './data1/data1.xlsx'
             df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"]) 
+            data_load_success = False # Flag to track if data loading was successful
 
             try:
-                actual_cols_to_read = ["论文类型", "Unnamed: 2"] # Still assuming 'Unnamed: 2' is your data type column
-                
+                actual_cols_to_read = ["论文类型", "Unnamed: 2"]
                 df_temp = pd.read_excel(excel_file_path, usecols=actual_cols_to_read)
                 df_temp.rename(columns={"Unnamed: 2": "数据类型"}, inplace=True)
                 df_db_types = df_temp
-                
-                st.success(f"成功从 '{excel_file_path}' 加载并重命名列。")
-
+                st.success(f"成功从 '{excel_file_path}' 加载并重命名列。") # This message you see
+                data_load_success = True
             except FileNotFoundError:
                 st.error(f"错误：文件 '{excel_file_path}' 未找到。请确保文件路径和名称正确。")
-                df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"]) # Ensure it's initialized for graceful failure
             except ValueError as e:
                 st.error(f"错误：无法从 '{excel_file_path}' 读取指定的列。请检查文件列名。错误详情: {e}")
-                df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"])
-                try:
-                    temp_df_for_cols = pd.read_excel(excel_file_path, nrows=0)
-                    st.warning(f"DEBUG (ValueError): Excel 中的实际列名: {temp_df_for_cols.columns.tolist()}")
-                except Exception as ex_inner:
-                    st.warning(f"DEBUG: 无法读取列名进行调试。内部错误: {ex_inner}")
+                # ... (debug for ValueError)
             except Exception as e_general:
                 st.error(f"读取Excel文件时发生一般错误: {e_general}")
-                df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"])
 
-            # Process "论文类型"
+            # --- Data Processing Logic (only if data loaded) ---
             paper_labels_all, paper_values_all = [], []
-            if "论文类型" in df_db_types.columns and not df_db_types["论文类型"].dropna().empty:
-                paper_type_counts = df_db_types["论文类型"].dropna().value_counts()
-                paper_labels_all = paper_type_counts.index.tolist()
-                paper_values_all = paper_type_counts.values.tolist()
-            
-            # Process "数据类型"
             data_type_labels_all, data_type_values_all = [], []
-            if "数据类型" in df_db_types.columns and not df_db_types["数据类型"].dropna().empty:
-                data_type_counts = df_db_types["数据类型"].dropna().value_counts()
-                data_type_labels_all = data_type_counts.index.tolist()
-                data_type_values_all = data_type_counts.values.tolist()
 
-            col_pie1, col_pie2 = st.columns(2)
-            chart_font_color = 'white'
-            donut_hole_color = '#0d1e56' # A dark blue, adjust to match your reference image's center
+            if data_load_success:
+                if "论文类型" in df_db_types.columns and not df_db_types["论文类型"].dropna().empty:
+                    paper_type_counts = df_db_types["论文类型"].dropna().value_counts()
+                    paper_labels_all = paper_type_counts.index.tolist()
+                    paper_values_all = paper_type_counts.values.tolist()
+                
+                if "数据类型" in df_db_types.columns and not df_db_types["数据类型"].dropna().empty:
+                    data_type_counts = df_db_types["数据类型"].dropna().value_counts()
+                    data_type_labels_all = data_type_counts.index.tolist()
+                    data_type_values_all = data_type_counts.values.tolist()
 
-            # --- Chart 1: 论文类型 ---
-            with col_pie1:
-                if paper_labels_all and paper_values_all:
-                    fig_paper, ax_paper = plt.subplots(figsize=(2.8, 2.8)) # Slightly larger for better text fit
-                    fig_paper.patch.set_alpha(0.0) 
-                    ax_paper.patch.set_alpha(0.0)  
+            # --- Create Columns for Pie Charts (still inside tile1) ---
+            # This is the line that was causing the error:
+            # col_pie1, col_pie2 = st.columns(2)
+            # Let's try placing it differently if the above doesn't fix it,
+            # but for now, the primary suspicion is the context.
+            # The error occurs AT THIS LINE, which means the Streamlit context is problematic.
 
-                    # Sort by value to get the largest category for center text
-                    sorted_paper_data = sorted(zip(paper_values_all, paper_labels_all), reverse=True)
-                    sorted_paper_values = [data[0] for data in sorted_paper_data]
-                    sorted_paper_labels = [data[1] for data in sorted_paper_data]
-                    
-                    # Define colors - ensure enough colors if many categories
-                    paper_colors = sns.color_palette("Blues_r", len(sorted_paper_labels)) # Example palette
+            # --- Plotting (inside the columns, which are inside the container) ---
+            # If data loading failed, we might not even want to attempt to create columns for plotting.
+            if data_load_success:
+                col_pie1, col_pie2 = st.columns(2) # Create columns for the charts
 
-                    wedges, texts, autotexts = ax_paper.pie(
-                        sorted_paper_values,
-                        # labels=None, # Labels handled by legend or center text
-                        autopct='%1.1f%%',
-                        startangle=90,
-                        colors=paper_colors,
-                        pctdistance=0.85, # Distance of autopct from center
-                        textprops={'fontsize': 6, 'color': 'white'}, # Percentage text on wedges
-                        wedgeprops=dict(width=0.4, edgecolor=donut_hole_color) # Donut hole
-                    )
-                    # Make autopct text black if on light wedge, white if on dark
-                    for i, autotext in enumerate(autotexts):
-                        # Simple brightness check (heuristic)
-                        if paper_colors[i][0] * 0.299 + paper_colors[i][1] * 0.587 + paper_colors[i][2] * 0.114 > 0.6:
-                             autotext.set_color('black')
-                        else:
-                             autotext.set_color('white')
+                chart_font_color = 'white'
+                donut_hole_color = '#0d1e56' 
 
+                with col_pie1:
+                    if paper_labels_all and paper_values_all:
+                        fig_paper, ax_paper = plt.subplots(figsize=(2.8, 2.8)) 
+                        fig_paper.patch.set_alpha(0.0) 
+                        ax_paper.patch.set_alpha(0.0)  
 
-                    # Center Text for the largest category
-                    center_label_paper = sorted_paper_labels[0]
-                    center_value_paper = (sorted_paper_values[0] / sum(sorted_paper_values)) * 100
-                    ax_paper.text(0, 0.1, f"{center_label_paper}", ha='center', va='center', fontsize=10, color=chart_font_color, weight='bold')
-                    ax_paper.text(0, -0.15, f"{center_value_paper:.1f}%", ha='center', va='center', fontsize=12, color=chart_font_color, weight='bold')
-                    
-                    ax_paper.axis('equal')
-                    # Optional: Add a small legend for other categories if space allows and needed
-                    if len(sorted_paper_labels) > 1:
-                         # Create legend entries for categories NOT in the center
-                        legend_labels = []
-                        legend_wedges = []
-                        for i in range(1, len(sorted_paper_labels)):
-                            if i < 4: # Limit legend items to prevent clutter
+                        sorted_paper_data = sorted(zip(paper_values_all, paper_labels_all), reverse=True)
+                        sorted_paper_values = [data[0] for data in sorted_paper_data]
+                        sorted_paper_labels = [data[1] for data in sorted_paper_data]
+                        
+                        paper_colors = sns.color_palette("Blues_r", len(sorted_paper_labels))
+
+                        wedges, texts, autotexts = ax_paper.pie(
+                            sorted_paper_values,
+                            autopct='%1.1f%%', startangle=90, colors=paper_colors,
+                            pctdistance=0.85, textprops={'fontsize': 6, 'color': 'white'},
+                            wedgeprops=dict(width=0.4, edgecolor=donut_hole_color) 
+                        )
+                        for i, autotext in enumerate(autotexts):
+                            if paper_colors[i][0] * 0.299 + paper_colors[i][1] * 0.587 + paper_colors[i][2] * 0.114 > 0.6:
+                                 autotext.set_color('black')
+                            else:
+                                 autotext.set_color('white')
+
+                        center_label_paper = sorted_paper_labels[0]
+                        center_value_paper = (sorted_paper_values[0] / sum(sorted_paper_values)) * 100
+                        ax_paper.text(0, 0.1, f"{center_label_paper}", ha='center', va='center', fontsize=10, color=chart_font_color, weight='bold')
+                        ax_paper.text(0, -0.15, f"{center_value_paper:.1f}%", ha='center', va='center', fontsize=12, color=chart_font_color, weight='bold')
+                        
+                        ax_paper.axis('equal')
+                        if len(sorted_paper_labels) > 1:
+                            legend_labels = []
+                            legend_wedges = []
+                            for i in range(1, min(len(sorted_paper_labels), 4)): # ensure not to exceed list length
                                 legend_labels.append(f"{sorted_paper_labels[i]}")
                                 legend_wedges.append(wedges[i])
-                        if legend_labels:
-                            ax_paper.legend(legend_wedges, legend_labels,
-                                        # title="其他",
-                                        loc="lower center",
-                                        bbox_to_anchor=(0.5, -0.25), # Position legend below
-                                        fontsize=6,
-                                        labelcolor=chart_font_color,
-                                        # title_fontproperties={'color': chart_font_color, 'size': 7},
-                                        facecolor='none', edgecolor='none', ncol=2)
+                            if legend_labels:
+                                ax_paper.legend(legend_wedges, legend_labels,
+                                            loc="lower center", bbox_to_anchor=(0.5, -0.25), 
+                                            fontsize=6, labelcolor=chart_font_color,
+                                            facecolor='none', edgecolor='none', ncol=2)
+                        st.pyplot(fig_paper, use_container_width=True)
+                    else:
+                        st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无论文类型数据</p>", unsafe_allow_html=True)
+                
+                with col_pie2:
+                    if data_type_labels_all and data_type_values_all:
+                        fig_data, ax_data = plt.subplots(figsize=(2.8, 2.8))
+                        fig_data.patch.set_alpha(0.0)
+                        ax_data.patch.set_alpha(0.0)
 
-                    st.pyplot(fig_paper, use_container_width=True)
-                else:
-                    st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无论文类型数据</p>", unsafe_allow_html=True)
-            
-            # --- Chart 2: 数据类型 ---
-            with col_pie2:
-                if data_type_labels_all and data_type_values_all:
-                    fig_data, ax_data = plt.subplots(figsize=(2.8, 2.8))
-                    fig_data.patch.set_alpha(0.0)
-                    ax_data.patch.set_alpha(0.0)
+                        sorted_data_type_data = sorted(zip(data_type_values_all, data_type_labels_all), reverse=True)
+                        sorted_data_type_values = [data[0] for data in sorted_data_type_data]
+                        sorted_data_type_labels = [data[1] for data in sorted_data_type_data]
+                        data_type_colors = sns.color_palette("Greens_r", len(sorted_data_type_labels))
 
-                    sorted_data_type_data = sorted(zip(data_type_values_all, data_type_labels_all), reverse=True)
-                    sorted_data_type_values = [data[0] for data in sorted_data_type_data]
-                    sorted_data_type_labels = [data[1] for data in sorted_data_type_data]
+                        wedges, texts, autotexts = ax_data.pie(
+                            sorted_data_type_values,
+                            autopct='%1.1f%%', startangle=90, colors=data_type_colors,
+                            pctdistance=0.85, textprops={'fontsize': 6, 'color': 'white'},
+                            wedgeprops=dict(width=0.4, edgecolor=donut_hole_color)
+                        )
+                        for i, autotext in enumerate(autotexts):
+                            if data_type_colors[i][0] * 0.299 + data_type_colors[i][1] * 0.587 + data_type_colors[i][2] * 0.114 > 0.6:
+                                 autotext.set_color('black')
+                            else:
+                                 autotext.set_color('white')
 
-                    data_type_colors = sns.color_palette("Greens_r", len(sorted_data_type_labels))
-
-
-                    wedges, texts, autotexts = ax_data.pie(
-                        sorted_data_type_values,
-                        # labels=None,
-                        autopct='%1.1f%%',
-                        startangle=90,
-                        colors=data_type_colors,
-                        pctdistance=0.85, 
-                        textprops={'fontsize': 6, 'color': 'white'},
-                        wedgeprops=dict(width=0.4, edgecolor=donut_hole_color) # Donut hole
-                    )
-                    for i, autotext in enumerate(autotexts):
-                        if data_type_colors[i][0] * 0.299 + data_type_colors[i][1] * 0.587 + data_type_colors[i][2] * 0.114 > 0.6:
-                             autotext.set_color('black')
-                        else:
-                             autotext.set_color('white')
-
-                    center_label_data = sorted_data_type_labels[0]
-                    center_value_data = (sorted_data_type_values[0] / sum(sorted_data_type_values)) * 100
-                    ax_data.text(0, 0.1, f"{center_label_data}", ha='center', va='center', fontsize=10, color=chart_font_color, weight='bold')
-                    ax_data.text(0, -0.15, f"{center_value_data:.1f}%", ha='center', va='center', fontsize=12, color=chart_font_color, weight='bold')
-                    
-                    ax_data.axis('equal')
-                    if len(sorted_data_type_labels) > 1:
-                        legend_labels = []
-                        legend_wedges = []
-                        for i in range(1, len(sorted_data_type_labels)):
-                            if i < 4: 
+                        center_label_data = sorted_data_type_labels[0]
+                        center_value_data = (sorted_data_type_values[0] / sum(sorted_data_type_values)) * 100
+                        ax_data.text(0, 0.1, f"{center_label_data}", ha='center', va='center', fontsize=10, color=chart_font_color, weight='bold')
+                        ax_data.text(0, -0.15, f"{center_value_data:.1f}%", ha='center', va='center', fontsize=12, color=chart_font_color, weight='bold')
+                        
+                        ax_data.axis('equal')
+                        if len(sorted_data_type_labels) > 1:
+                            legend_labels = []
+                            legend_wedges = []
+                            for i in range(1, min(len(sorted_data_type_labels), 4)): # ensure not to exceed list length
                                 legend_labels.append(f"{sorted_data_type_labels[i]}")
                                 legend_wedges.append(wedges[i])
-                        if legend_labels:
-                            ax_data.legend(legend_wedges, legend_labels,
-                                        # title="其他",
-                                        loc="lower center",
-                                        bbox_to_anchor=(0.5, -0.25),
-                                        fontsize=6,
-                                        labelcolor=chart_font_color,
-                                        # title_fontproperties={'color': chart_font_color, 'size': 7},
-                                        facecolor='none', edgecolor='none', ncol=2)
-                    st.pyplot(fig_data, use_container_width=True)
-                else:
-                    st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无数据类型数据</p>", unsafe_allow_html=True)
+                            if legend_labels:
+                                ax_data.legend(legend_wedges, legend_labels,
+                                            loc="lower center", bbox_to_anchor=(0.5, -0.25),
+                                            fontsize=6, labelcolor=chart_font_color,
+                                            facecolor='none', edgecolor='none', ncol=2)
+                        st.pyplot(fig_data, use_container_width=True)
+                    else:
+                        st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无数据类型数据</p>", unsafe_allow_html=True)
+            elif not df_db_types.empty: # If data load failed but df_db_types was initialized (e.g. FileNotFoundError)
+                 st.info("数据加载失败，无法生成图表。")
 
-       
             # MODIFIED SECTION ENDS HERE
 
             # 原始数据
