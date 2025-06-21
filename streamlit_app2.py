@@ -573,6 +573,7 @@ with tabs[0]:
             st.bokeh_chart(p_bokeh, use_container_width=True)
             # --- End of corrected Bokeh plot section ---
 
+
         with row2[0]:
             tile1 = st.container(height=270, border=True)  # 创建容器
         with tile1:
@@ -605,27 +606,23 @@ with tabs[0]:
                         )
 
             excel_file_path = './data1/data1.xlsx'
-            # Initialize as empty DataFrame with the desired final column names
             df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"]) 
 
             try:
-                # Read using the actual column names from your Excel file
-                # Assuming '论文类型' is correct and '数据类型' corresponds to the third column 'Unnamed: 2'
-                actual_cols_to_read = ["论文类型", "Unnamed: 2"] # Corrected based on debug
+                actual_cols_to_read = ["论文类型", "Unnamed: 2"] # Still assuming 'Unnamed: 2' is your data type column
                 
                 df_temp = pd.read_excel(excel_file_path, usecols=actual_cols_to_read)
-                
-                # Rename the 'Unnamed: 2' column to '数据类型' for consistent use in the rest of the code
                 df_temp.rename(columns={"Unnamed: 2": "数据类型"}, inplace=True)
-                df_db_types = df_temp # Assign to the main DataFrame
+                df_db_types = df_temp
                 
                 st.success(f"成功从 '{excel_file_path}' 加载并重命名列。")
 
             except FileNotFoundError:
                 st.error(f"错误：文件 '{excel_file_path}' 未找到。请确保文件路径和名称正确。")
+                df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"]) # Ensure it's initialized for graceful failure
             except ValueError as e:
                 st.error(f"错误：无法从 '{excel_file_path}' 读取指定的列。请检查文件列名。错误详情: {e}")
-                # Optional: keep this debug for future issues if column names change again
+                df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"])
                 try:
                     temp_df_for_cols = pd.read_excel(excel_file_path, nrows=0)
                     st.warning(f"DEBUG (ValueError): Excel 中的实际列名: {temp_df_for_cols.columns.tolist()}")
@@ -633,101 +630,146 @@ with tabs[0]:
                     st.warning(f"DEBUG: 无法读取列名进行调试。内部错误: {ex_inner}")
             except Exception as e_general:
                 st.error(f"读取Excel文件时发生一般错误: {e_general}")
-
+                df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"])
 
             # Process "论文类型"
-            paper_labels, paper_values = [], []
+            paper_labels_all, paper_values_all = [], []
             if "论文类型" in df_db_types.columns and not df_db_types["论文类型"].dropna().empty:
                 paper_type_counts = df_db_types["论文类型"].dropna().value_counts()
-                paper_labels = paper_type_counts.index.tolist()
-                paper_values = paper_type_counts.values.tolist()
-            else:
-                if "论文类型" not in df_db_types.columns and df_db_types.empty : 
-                     st.info(f"列 '论文类型' 未找到或文件 '{excel_file_path}' 为空/读取失败。")
-                elif not paper_labels and not df_db_types.empty:
-                     st.info("列 '论文类型' 在文件中无有效数据。")
+                paper_labels_all = paper_type_counts.index.tolist()
+                paper_values_all = paper_type_counts.values.tolist()
             
             # Process "数据类型"
-            data_type_labels, data_type_values = [], []
-            if "数据类型" in df_db_types.columns and not df_db_types["数据类型"].dropna().empty: # Now checking the renamed column
+            data_type_labels_all, data_type_values_all = [], []
+            if "数据类型" in df_db_types.columns and not df_db_types["数据类型"].dropna().empty:
                 data_type_counts = df_db_types["数据类型"].dropna().value_counts()
-                data_type_labels = data_type_counts.index.tolist()
-                data_type_values = data_type_counts.values.tolist()
-            else:
-                if "数据类型" not in df_db_types.columns and df_db_types.empty: 
-                    st.info(f"列 '数据类型' (或其原始列) 未找到或文件 '{excel_file_path}' 为空/读取失败。")
-                elif not data_type_labels and not df_db_types.empty:
-                    st.info("列 '数据类型' 在文件中无有效数据。")
+                data_type_labels_all = data_type_counts.index.tolist()
+                data_type_values_all = data_type_counts.values.tolist()
 
-            # Create two columns for the pie charts
             col_pie1, col_pie2 = st.columns(2)
-
             chart_font_color = 'white'
+            donut_hole_color = '#0d1e56' # A dark blue, adjust to match your reference image's center
 
+            # --- Chart 1: 论文类型 ---
             with col_pie1:
-                if paper_labels and paper_values:
-                    fig_paper, ax_paper = plt.subplots(figsize=(2.5, 2.5)) 
+                if paper_labels_all and paper_values_all:
+                    fig_paper, ax_paper = plt.subplots(figsize=(2.8, 2.8)) # Slightly larger for better text fit
                     fig_paper.patch.set_alpha(0.0) 
                     ax_paper.patch.set_alpha(0.0)  
 
+                    # Sort by value to get the largest category for center text
+                    sorted_paper_data = sorted(zip(paper_values_all, paper_labels_all), reverse=True)
+                    sorted_paper_values = [data[0] for data in sorted_paper_data]
+                    sorted_paper_labels = [data[1] for data in sorted_paper_data]
+                    
+                    # Define colors - ensure enough colors if many categories
+                    paper_colors = sns.color_palette("Blues_r", len(sorted_paper_labels)) # Example palette
+
                     wedges, texts, autotexts = ax_paper.pie(
-                        paper_values,
-                        labels=None, 
+                        sorted_paper_values,
+                        # labels=None, # Labels handled by legend or center text
                         autopct='%1.1f%%',
                         startangle=90,
-                        colors=sns.color_palette("pastel", len(paper_labels)),
-                        pctdistance=0.80, 
-                        textprops={'fontsize': 7} 
+                        colors=paper_colors,
+                        pctdistance=0.85, # Distance of autopct from center
+                        textprops={'fontsize': 6, 'color': 'white'}, # Percentage text on wedges
+                        wedgeprops=dict(width=0.4, edgecolor=donut_hole_color) # Donut hole
                     )
-                    for autotext in autotexts:
-                        autotext.set_color('black') 
+                    # Make autopct text black if on light wedge, white if on dark
+                    for i, autotext in enumerate(autotexts):
+                        # Simple brightness check (heuristic)
+                        if paper_colors[i][0] * 0.299 + paper_colors[i][1] * 0.587 + paper_colors[i][2] * 0.114 > 0.6:
+                             autotext.set_color('black')
+                        else:
+                             autotext.set_color('white')
 
-                    ax_paper.legend(wedges, paper_labels,
-                                  title="论文类型",
-                                  loc="center left",
-                                  bbox_to_anchor=(1, 0, 0.5, 1), 
-                                  fontsize=7,
-                                  labelcolor=chart_font_color,
-                                  title_fontproperties={'color': chart_font_color, 'size': 8},
-                                  facecolor='none', edgecolor='none' 
-                                  )
+
+                    # Center Text for the largest category
+                    center_label_paper = sorted_paper_labels[0]
+                    center_value_paper = (sorted_paper_values[0] / sum(sorted_paper_values)) * 100
+                    ax_paper.text(0, 0.1, f"{center_label_paper}", ha='center', va='center', fontsize=10, color=chart_font_color, weight='bold')
+                    ax_paper.text(0, -0.15, f"{center_value_paper:.1f}%", ha='center', va='center', fontsize=12, color=chart_font_color, weight='bold')
+                    
                     ax_paper.axis('equal')
+                    # Optional: Add a small legend for other categories if space allows and needed
+                    if len(sorted_paper_labels) > 1:
+                         # Create legend entries for categories NOT in the center
+                        legend_labels = []
+                        legend_wedges = []
+                        for i in range(1, len(sorted_paper_labels)):
+                            if i < 4: # Limit legend items to prevent clutter
+                                legend_labels.append(f"{sorted_paper_labels[i]}")
+                                legend_wedges.append(wedges[i])
+                        if legend_labels:
+                            ax_paper.legend(legend_wedges, legend_labels,
+                                        # title="其他",
+                                        loc="lower center",
+                                        bbox_to_anchor=(0.5, -0.25), # Position legend below
+                                        fontsize=6,
+                                        labelcolor=chart_font_color,
+                                        # title_fontproperties={'color': chart_font_color, 'size': 7},
+                                        facecolor='none', edgecolor='none', ncol=2)
+
                     st.pyplot(fig_paper, use_container_width=True)
                 else:
                     st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无论文类型数据</p>", unsafe_allow_html=True)
             
+            # --- Chart 2: 数据类型 ---
             with col_pie2:
-                if data_type_labels and data_type_values:
-                    fig_data, ax_data = plt.subplots(figsize=(2.5, 2.5))
+                if data_type_labels_all and data_type_values_all:
+                    fig_data, ax_data = plt.subplots(figsize=(2.8, 2.8))
                     fig_data.patch.set_alpha(0.0)
                     ax_data.patch.set_alpha(0.0)
 
+                    sorted_data_type_data = sorted(zip(data_type_values_all, data_type_labels_all), reverse=True)
+                    sorted_data_type_values = [data[0] for data in sorted_data_type_data]
+                    sorted_data_type_labels = [data[1] for data in sorted_data_type_data]
+
+                    data_type_colors = sns.color_palette("Greens_r", len(sorted_data_type_labels))
+
+
                     wedges, texts, autotexts = ax_data.pie(
-                        data_type_values,
-                        labels=None,
+                        sorted_data_type_values,
+                        # labels=None,
                         autopct='%1.1f%%',
                         startangle=90,
-                        colors=sns.color_palette("Set2", len(data_type_labels)),
-                        pctdistance=0.80,
-                        textprops={'fontsize': 7}
+                        colors=data_type_colors,
+                        pctdistance=0.85, 
+                        textprops={'fontsize': 6, 'color': 'white'},
+                        wedgeprops=dict(width=0.4, edgecolor=donut_hole_color) # Donut hole
                     )
-                    for autotext in autotexts:
-                        autotext.set_color('black')
+                    for i, autotext in enumerate(autotexts):
+                        if data_type_colors[i][0] * 0.299 + data_type_colors[i][1] * 0.587 + data_type_colors[i][2] * 0.114 > 0.6:
+                             autotext.set_color('black')
+                        else:
+                             autotext.set_color('white')
+
+                    center_label_data = sorted_data_type_labels[0]
+                    center_value_data = (sorted_data_type_values[0] / sum(sorted_data_type_values)) * 100
+                    ax_data.text(0, 0.1, f"{center_label_data}", ha='center', va='center', fontsize=10, color=chart_font_color, weight='bold')
+                    ax_data.text(0, -0.15, f"{center_value_data:.1f}%", ha='center', va='center', fontsize=12, color=chart_font_color, weight='bold')
                     
-                    ax_data.legend(wedges, data_type_labels,
-                                  title="数据类型",
-                                  loc="center left",
-                                  bbox_to_anchor=(1, 0, 0.5, 1),
-                                  fontsize=7,
-                                  labelcolor=chart_font_color,
-                                  title_fontproperties={'color': chart_font_color, 'size': 8},
-                                  facecolor='none', edgecolor='none'
-                                  )
                     ax_data.axis('equal')
+                    if len(sorted_data_type_labels) > 1:
+                        legend_labels = []
+                        legend_wedges = []
+                        for i in range(1, len(sorted_data_type_labels)):
+                            if i < 4: 
+                                legend_labels.append(f"{sorted_data_type_labels[i]}")
+                                legend_wedges.append(wedges[i])
+                        if legend_labels:
+                            ax_data.legend(legend_wedges, legend_labels,
+                                        # title="其他",
+                                        loc="lower center",
+                                        bbox_to_anchor=(0.5, -0.25),
+                                        fontsize=6,
+                                        labelcolor=chart_font_color,
+                                        # title_fontproperties={'color': chart_font_color, 'size': 7},
+                                        facecolor='none', edgecolor='none', ncol=2)
                     st.pyplot(fig_data, use_container_width=True)
                 else:
-                    st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无数据来源数据</p>", unsafe_allow_html=True)
-      
+                    st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无数据类型数据</p>", unsafe_allow_html=True)
+
        
             # MODIFIED SECTION ENDS HERE
 
