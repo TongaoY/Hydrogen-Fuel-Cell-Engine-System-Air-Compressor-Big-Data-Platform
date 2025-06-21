@@ -42,6 +42,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+mpl.font_manager.fontManager.addfont('字体/SimHei.ttf') #临时注册新的全局字体
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体
 plt.rcParams['axes.unicode_minus'] = False  # 正确显示负号
 # 初始化 session state，如果不存在的话
