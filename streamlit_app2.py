@@ -26,17 +26,31 @@ from openai import OpenAI
 st.markdown(
     """
     <style>
+    /* 加载字体文件 */
+    @font-face {
+        font-family: 'NotoSansCJK';
+        src: url('NotoSansCJK-Regular.ttc') format('truetype'); /* 确保字体文件路径正确 */
+    }
+
     /* Set the background color for the entire app */
     .stApp {
         background-color: #08103f;
     }
+
     /* Ensure all text is readable against the dark background */
     .stApp * {
         color: white !important;
+        font-family: 'NotoSansCJK', 'Arial Unicode MS', sans-serif !important; /* 应用字体 */
     }
+
     /* Adjust container backgrounds if needed */
     .stContainer {
         background-color: transparent;
+    }
+
+    /* 针对 Plotly 图表应用字体（可选） */
+    .plotly-graph-div {
+        font-family: 'NotoSansCJK', 'Arial Unicode MS', sans-serif !important;
     }
     </style>
     """,
