@@ -42,8 +42,16 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体
-plt.rcParams['axes.unicode_minus'] = False  # 正确显示负号
+# Register SimHei font
+font_path = os.path.join(os.path.dirname(__file__), "simhei.ttf")  # Adjust path if needed
+if os.path.exists(font_path):
+    matplotlib.font_manager.fontManager.addfont(font_path)
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # Set SimHei as the default font
+    plt.rcParams['axes.unicode_minus'] = False  # Ensure proper minus sign display
+else:
+    st.warning("SimHei font file not found. Chinese characters may not display correctly.")
+    plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'sans-serif']  # Fallback fonts
+
 # 初始化 session state，如果不存在的话
 if 'selected' not in st.session_state:
    st.session_state.selected = None
