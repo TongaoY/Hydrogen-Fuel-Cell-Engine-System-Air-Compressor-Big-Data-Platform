@@ -43,14 +43,14 @@ st.markdown(
     unsafe_allow_html=True
 )
 # Register SimHei font
-font_path = os.path.join(os.path.dirname(__file__), "simhei.ttf")  # Adjust path if needed
+font_path = os.path.join(os.path.dirname(__file__), "NotoSansCJK-Regular.ttc")
 if os.path.exists(font_path):
     matplotlib.font_manager.fontManager.addfont(font_path)
-    plt.rcParams['font.sans-serif'] = ['SimHei']  # Set SimHei as the default font
-    plt.rcParams['axes.unicode_minus'] = False  # Ensure proper minus sign display
+    plt.rcParams['font.sans-serif'] = ['Noto Sans CJK']
+    plt.rcParams['axes.unicode_minus'] = False
 else:
-    st.warning("SimHei font file not found. Chinese characters may not display correctly.")
-    plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'sans-serif']  # Fallback fonts
+    st.warning("Chinese font file not found. Using fallback fonts.")
+    plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'sans-serif']
 
 # 初始化 session state，如果不存在的话
 if 'selected' not in st.session_state:
