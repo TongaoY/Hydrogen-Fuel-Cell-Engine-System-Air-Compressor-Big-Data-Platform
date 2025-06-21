@@ -467,18 +467,16 @@ with tabs[0]:
             df02 = pd.concat([df021, df022, df023], ignore_index=True).squeeze()
             df03 = pd.concat([df031, df032, df033], ignore_index=True).squeeze()
 
-            print("数据类型:", df01.dtype, df02.dtype, df03.dtype)
-            print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
-            # 检查数据长度和NaN值
-            print("数据长度:", len(df01), len(df02), len(df03))
-            print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
+            # print("数据类型:", df01.dtype, df02.dtype, df03.dtype) # Optional: for debugging
+            # print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
+            # # 检查数据长度和NaN值
+            # print("数据长度:", len(df01), len(df02), len(df03))
+            # print("NaN数量:", pd.isna(df01).sum(), pd.isna(df02).sum(), pd.isna(df03).sum())
 
             array = df03
-
             value_array = df03  # 或者使用其他颜色数据
 
-
-            fig = go.Figure(data=[go.Scatter3d(
+            fig_plotly3d = go.Figure(data=[go.Scatter3d( # Renamed fig to fig_plotly3d to avoid conflict if 'fig' is used elsewhere
                 x=df01,
                 y=df02,
                 z=array,
@@ -491,7 +489,7 @@ with tabs[0]:
                 )
             )])
 
-            fig.update_layout(scene=dict(
+            fig_plotly3d.update_layout(scene=dict(
                 zaxis=dict(showbackground=False, title="压缩比"),
                 xaxis=dict(title="转速r/min", ),
                 yaxis=dict(title="质量流量g/s"),
@@ -501,66 +499,83 @@ with tabs[0]:
                 width=280,  # 设置图表宽度，略小于容器宽度以考虑内边距
                 height=230,  # 设置图表高度，略小于容器高度以考虑标题和内边距
                 margin=dict(l=0, r=0, b=0, t=0), template="plotly_dark", )  # 暗色主题
+            # st.plotly_chart(fig_plotly3d, use_container_width=True) # Plotly chart was here, but Bokeh chart follows.
+                                                                    # This container only has height=270, two charts might be too much.
+                                                                    # Assuming the Bokeh chart is the one intended for display here, or it replaces the Plotly one.
+                                                                    # If both are needed, the container height might need adjustment or separate containers.
+                                                                    # For now, I will assume the Bokeh chart is the primary one for this small space.
+                                                                    # Or if Plotly chart was just for data prep, then remove its st.plotly_chart call.
+                                                                    # Given the traceback related to Bokeh, I'll focus on making Bokeh work.
+                                                                    # The original code displayed the Bokeh chart, not the Plotly one in this specific tile.
 
+            # --- Start of corrected Bokeh plot section ---
             from bokeh.plotting import figure, show
-            #from bokeh.sampledata.penguins import data
             from bokeh.transform import factor_cmap, factor_mark
-
-            # 交互控制面板
-            point_size = 12
+            
+            # Interaction controls for Bokeh plot
+            point_size = 7 # Adjusted for smaller plot size
             opacity = 0.6
             
-            from bokeh.sampledata.penguins import data as bokeh_penguins_data # Renamed to avoid conflict
+            from bokeh.sampledata.penguins import data as bokeh_penguins_data 
 
-            # 准备数据
-            SPECIES = sorted(data.species.unique())
+            # Prepare data USING THE CORRECT ALIAS 'bokeh_penguins_data'
+            SPECIES = sorted(bokeh_penguins_data.species.unique())
             MARKERS = ['hex', 'circle_x', 'triangle']
 
-            # 创建图表
-            p = figure(
+            # Create Bokeh figure
+            p_bokeh = figure( # Renamed to p_bokeh
                 title="",
                 tools="pan,wheel_zoom,box_zoom,reset,save,hover",
-                background_fill_color=None,  # 设置背景为透明
-                border_fill_color=None,  # 设置边框填充为透明
-                width=200,
-                height=200
+                background_fill_color=None,
+                border_fill_color=None,
+                # width and height will be managed by use_container_width=True
             )
-            p.scatter(
+            
+            p_bokeh.scatter(
                 "flipper_length_mm", "body_mass_g",
-                source=data, size=18,
-                fill_alpha=0.2, line_alpha=0,
-                color=factor_cmap('species', 'Category10_3', SPECIES))
-            # 配置坐标轴
-            p.xaxis.axis_label = ''
-            p.yaxis.axis_label = ''
-            p.xaxis.axis_label_text_color = "white"
-            p.yaxis.axis_label_text_color = "white"
+                source=bokeh_penguins_data, 
+                size=point_size + 2, # Slightly larger for background/overview
+                fill_alpha=0.2, 
+                line_alpha=0,
+                color=factor_cmap('species', 'Category10_3', SPECIES)
+            )
+            
+            p_bokeh.xaxis.axis_label = ''
+            p_bokeh.yaxis.axis_label = ''
+            p_bokeh.xaxis.axis_label_text_color = "white"
+            p_bokeh.yaxis.axis_label_text_color = "white"
 
-            # 添加散点图（去掉legend_group参数以去除图例）
-            scatter = p.scatter(
+            p_bokeh.scatter(
                 "flipper_length_mm",
                 "body_mass_g",
-                source=data,
+                source=bokeh_penguins_data, 
                 fill_alpha=opacity,
                 size=point_size,
-                line_width=1,
+                line_width=0.5, # Thinner line
                 line_color="black",
                 marker=factor_mark('species', MARKERS, SPECIES),
                 color=factor_cmap('species', 'Category10_3', SPECIES)
             )
 
-            # 配置图表样式
-            p.title.text_color = "white"
-            p.xgrid.grid_line_color = "#555555"
-            p.ygrid.grid_line_color = "#555555"
-            p.axis.major_tick_line_color = "white"
-            p.axis.minor_tick_line_color = "white"
-            p.axis.major_label_text_color = "white"
+            p_bokeh.title.text_color = "white"
+            p_bokeh.xgrid.grid_line_color = "#555555"
+            p_bokeh.ygrid.grid_line_color = "#555555"
+            p_bokeh.axis.major_tick_line_color = "white"
+            p_bokeh.axis.minor_tick_line_color = "white"
+            p_bokeh.axis.major_label_text_color = "white"
+            p_bokeh.toolbar.logo = None # Hide Bokeh logo for cleaner look in small space
+            p_bokeh.min_border_left = 5
+            p_bokeh.min_border_right = 5
+            p_bokeh.min_border_top = 5
+            p_bokeh.min_border_bottom = 5
 
-            # 显示图表
-            st.bokeh_chart(p, use_container_width=True)
+
+            st.bokeh_chart(p_bokeh, use_container_width=True)
+            # --- End of corrected Bokeh plot section ---
+
         with row2[0]:
             tile1 = st.container(height=270, border=True)  # 创建容器
+
         with tile1:
             # 定义 CSS 样式
             st.markdown(
