@@ -42,7 +42,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-# Register SimHei font
+# Register Noto Sans CJK font
 font_path = os.path.join(os.path.dirname(__file__), "NotoSansCJK-Regular.ttc")
 if os.path.exists(font_path):
     matplotlib.font_manager.fontManager.addfont(font_path)
@@ -946,12 +946,12 @@ with tabs[1]:
                         paper_bgcolor='white',  # 整个画布背景色
                         margin=dict(l=100, r=100, t=100, b=100),  # 边距（避免内容紧贴边框）
                         xaxis=dict(
-                            tickfont=dict(size=20, family='SimHei', color='black'),
+                            tickfont=dict(size=20, family='Noto Sans CJK', color='black'),
                             linewidth=2,  # 设置x轴线条粗细
                             linecolor='black'  # 设置x轴线条颜色
                         ),
                         yaxis=dict(
-                            tickfont=dict(size=20, family='SimHei', color='black'),
+                            tickfont=dict(size=20, family='Noto Sans CJK', color='black'),
                             linewidth=2,  # 设置y轴线条粗细
                             linecolor='black'  # 设置y轴线条颜色
                         ),
@@ -964,7 +964,7 @@ with tabs[1]:
                             font=dict(
                                 size=20,  # 字体大小
                                 color='#333',
-                                family='SimHei',
+                                family='Noto Sans CJK',
                             ),
                             itemsizing='constant'  # 图例图标大小一致
                         ),
@@ -1258,11 +1258,11 @@ with tabs[1]:
                             legend=dict(
                                 font=dict(
                                     size=24,  # 图例文字大小
-                                    family="SimHei"   # 字体
+                                    family="Noto Sans CJK"   # 字体
                                 ),
                                 title_font=dict(
                                     size=24,  # 图例标题大小（如果有）
-                                    family="SimHei"
+                                    family="Noto Sans CJK"
                                 ),
                                 itemsizing='constant',  # 图例项大小一致
                                 traceorder='normal',  # 图例顺序
@@ -1282,7 +1282,7 @@ with tabs[1]:
 
                             # 整体字体设置（可选）
                             font=dict(
-                                family="SimHei",
+                                family="Noto Sans CJK",
                                 size=24
                             )
                         )
