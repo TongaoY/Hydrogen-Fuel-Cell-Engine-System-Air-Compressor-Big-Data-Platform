@@ -573,9 +573,9 @@ with tabs[0]:
             st.bokeh_chart(p_bokeh, use_container_width=True)
             # --- End of corrected Bokeh plot section ---
 
+
         with row2[0]:
             tile1 = st.container(height=270, border=True)  # 创建容器
-
         with tile1:
             # 定义 CSS 样式
             st.markdown(
@@ -585,45 +585,59 @@ with tabs[0]:
                     width: 300px;              /* 设置容器宽度 */
                     height: 30px;             /* 设置容器高度 */
                     background: linear-gradient(45deg, #191c83, transparent);
-
-
                     padding: 10px;             /* 设置内边距 */
-                    margin-top:-20px;margin-left: 0px;
+                    margin-top:-10px;margin-left: 0px; /* Corrected margin-top from -20px */
                 }
                 .title6 {font-size: 17px; text-align: left;margin-top:-6px;margin-left: 30px;padding: 0;color: white;}
-
                 </style>
-
                 """,
                 unsafe_allow_html=True
             )
 
-            # 创建一个较小的自定义容器
             st.markdown("""
-                        <style>
-                        </style>
+                        <style></style>
                         <body>
                             <div class="custom-container11">
                             <h1 class="title6">数据库数据类型</h1>
                             </div>
-
                         </body>
-                        """
-                        ,
+                        """,
                         unsafe_allow_html=True
                         )
 
-            # MODIFIED SECTION STARTS HERE
             excel_file_path = './data1/data1.xlsx'
+            df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"]) # Initialize as empty
+
             try:
-                # 根据表格示例，列名应为 "论文类型" 和 "数据类型"
+                # --- TEMPORARY DEBUGGING ---
+                # Try to read just the header or first row to see column names
+                # Option 1: Read only header
+                # temp_df = pd.read_excel(excel_file_path, nrows=0)
+                # st.write("DEBUG: Actual column names found in Excel:", temp_df.columns.tolist())
+
+                # Option 2: Read first few rows and display
+                # temp_df_head = pd.read_excel(excel_file_path, nrows=5)
+                # st.write("DEBUG: First 5 rows of Excel with headers:", temp_df_head)
+                # st.write("DEBUG: Actual column names found in Excel:", temp_df_head.columns.tolist())
+                # --- END TEMPORARY DEBUGGING ---
+
+                # Attempt to read the specific columns
                 df_db_types = pd.read_excel(excel_file_path, usecols=["论文类型", "数据类型"])
+                st.success(f"Successfully loaded specified columns from '{excel_file_path}'")
+
             except FileNotFoundError:
                 st.error(f"错误：文件 '{excel_file_path}' 未找到。请确保文件路径和名称正确。")
-                df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"]) # Create empty df to avoid further errors
             except ValueError as e:
-                st.error(f"错误：无法从 '{excel_file_path}' 读取指定的列。请检查文件是否包含 '论文类型' 和 '数据类型' 列，并且它们是第一和第三列。错误详情: {e}")
-                df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"])
+                st.error(f"错误：无法从 '{excel_file_path}' 读取指定的列。请检查文件列名。错误详情: {e}")
+                # For more detailed debugging of column names when ValueError occurs:
+                try:
+                    temp_df_for_cols = pd.read_excel(excel_file_path, nrows=0)
+                    st.warning(f"DEBUG: Actual column names in Excel that caused ValueError: {temp_df_for_cols.columns.tolist()}")
+                except Exception as ex_inner:
+                    st.warning(f"DEBUG: Could not read column names for debugging. Inner error: {ex_inner}")
+            except Exception as e_general:
+                st.error(f"读取Excel文件时发生一般错误: {e_general}")
+
 
             # Process "论文类型"
             paper_labels, paper_values = [], []
@@ -632,10 +646,10 @@ with tabs[0]:
                 paper_labels = paper_type_counts.index.tolist()
                 paper_values = paper_type_counts.values.tolist()
             else:
-                if "论文类型" not in df_db_types.columns:
-                    st.warning(f"列 '论文类型' 未在文件 '{excel_file_path}' 中找到。")
-                elif not paper_labels: # Check if it's empty because of no data after dropna
-                    st.info("列 '论文类型' 在文件中无有效数据。")
+                if "论文类型" not in df_db_types.columns and df_db_types.empty : # Only show if initial load likely failed
+                     st.info(f"列 '论文类型' 未找到或文件 '{excel_file_path}' 为空/读取失败。")
+                elif not paper_labels and not df_db_types.empty:
+                     st.info("列 '论文类型' 在文件中无有效数据。")
             
             # Process "数据类型"
             data_type_labels, data_type_values = [], []
@@ -644,47 +658,44 @@ with tabs[0]:
                 data_type_labels = data_type_counts.index.tolist()
                 data_type_values = data_type_counts.values.tolist()
             else:
-                if "数据类型" not in df_db_types.columns:
-                    st.warning(f"列 '数据类型' 未在文件 '{excel_file_path}' 中找到。")
-                elif not data_type_labels: # Check if it's empty
+                if "数据类型" not in df_db_types.columns and df_db_types.empty: # Only show if initial load likely failed
+                    st.info(f"列 '数据类型' 未找到或文件 '{excel_file_path}' 为空/读取失败。")
+                elif not data_type_labels and not df_db_types.empty:
                     st.info("列 '数据类型' 在文件中无有效数据。")
 
             # Create two columns for the pie charts
             col_pie1, col_pie2 = st.columns(2)
 
             chart_font_color = 'white'
-            # plt.rcParams['font.sans-serif'] = ['SimHei'] # Already set globally
-            # plt.rcParams['axes.unicode_minus'] = False   # Already set globally
 
             with col_pie1:
                 if paper_labels and paper_values:
-                    fig_paper, ax_paper = plt.subplots(figsize=(2.5, 2.5)) # Adjusted for container height
-                    fig_paper.patch.set_alpha(0.0)  # Transparent figure background
-                    ax_paper.patch.set_alpha(0.0)   # Transparent axes background
+                    fig_paper, ax_paper = plt.subplots(figsize=(2.5, 2.5)) 
+                    fig_paper.patch.set_alpha(0.0) 
+                    ax_paper.patch.set_alpha(0.0)  
 
                     wedges, texts, autotexts = ax_paper.pie(
                         paper_values,
-                        labels=None, # Labels handled by legend or custom text
+                        labels=None, 
                         autopct='%1.1f%%',
                         startangle=90,
                         colors=sns.color_palette("pastel", len(paper_labels)),
                         pctdistance=0.80, 
-                        textprops={'fontsize': 7} # Size for percentage text
+                        textprops={'fontsize': 7} 
                     )
                     for autotext in autotexts:
-                        autotext.set_color('black') # Percentages often clearer in black
+                        autotext.set_color('black') 
 
                     ax_paper.legend(wedges, paper_labels,
                                   title="论文类型",
                                   loc="center left",
-                                  bbox_to_anchor=(1, 0, 0.5, 1), # Adjust legend to be outside
+                                  bbox_to_anchor=(1, 0, 0.5, 1), 
                                   fontsize=7,
                                   labelcolor=chart_font_color,
                                   title_fontproperties={'color': chart_font_color, 'size': 8},
-                                  facecolor='none', edgecolor='none' # Transparent legend bg
+                                  facecolor='none', edgecolor='none' 
                                   )
                     ax_paper.axis('equal')
-                    # ax_paper.set_title("论文类型", color=chart_font_color, fontsize=9, pad=1) # Optional title
                     st.pyplot(fig_paper, use_container_width=True)
                 else:
                     st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无论文类型数据</p>", unsafe_allow_html=True)
@@ -717,13 +728,11 @@ with tabs[0]:
                                   facecolor='none', edgecolor='none'
                                   )
                     ax_data.axis('equal')
-                    # ax_data.set_title("数据来源", color=chart_font_color, fontsize=9, pad=1) # Optional title
                     st.pyplot(fig_data, use_container_width=True)
                 else:
                     st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无数据来源数据</p>", unsafe_allow_html=True)
+       
             # MODIFIED SECTION ENDS HERE
-
-
 
             # 原始数据
 
