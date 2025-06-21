@@ -33,6 +33,7 @@ st.markdown(
     /* Ensure all text is readable against the dark background */
     .stApp * {
         color: white !important;
+        font-family: "Microsoft YaHei", "Arial Unicode MS", sans-serif !important;
     }
     /* Adjust container backgrounds if needed */
     .stContainer {
@@ -42,8 +43,9 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体
-plt.rcParams['axes.unicode_minus'] = False  # 正确显示负号
+
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'Arial Unicode MS', 'sans-serif']
+plt.rcParams['axes.unicode_minus'] = False
 # 初始化 session state，如果不存在的话
 if 'selected' not in st.session_state:
    st.session_state.selected = None
