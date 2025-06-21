@@ -573,7 +573,6 @@ with tabs[0]:
             st.bokeh_chart(p_bokeh, use_container_width=True)
             # --- End of corrected Bokeh plot section ---
 
-
         with row2[0]:
             tile1 = st.container(height=270, border=True)  # 创建容器
         with tile1:
@@ -586,7 +585,7 @@ with tabs[0]:
                     height: 30px;             /* 设置容器高度 */
                     background: linear-gradient(45deg, #191c83, transparent);
                     padding: 10px;             /* 设置内边距 */
-                    margin-top:-10px;margin-left: 0px; /* Corrected margin-top from -20px */
+                    margin-top:-10px;margin-left: 0px; 
                 }
                 .title6 {font-size: 17px; text-align: left;margin-top:-6px;margin-left: 30px;padding: 0;color: white;}
                 </style>
@@ -606,35 +605,32 @@ with tabs[0]:
                         )
 
             excel_file_path = './data1/data1.xlsx'
-            df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"]) # Initialize as empty
+            # Initialize as empty DataFrame with the desired final column names
+            df_db_types = pd.DataFrame(columns=["论文类型", "数据类型"]) 
 
             try:
-                # --- TEMPORARY DEBUGGING ---
-                # Try to read just the header or first row to see column names
-                # Option 1: Read only header
-                # temp_df = pd.read_excel(excel_file_path, nrows=0)
-                # st.write("DEBUG: Actual column names found in Excel:", temp_df.columns.tolist())
-
-                # Option 2: Read first few rows and display
-                # temp_df_head = pd.read_excel(excel_file_path, nrows=5)
-                # st.write("DEBUG: First 5 rows of Excel with headers:", temp_df_head)
-                # st.write("DEBUG: Actual column names found in Excel:", temp_df_head.columns.tolist())
-                # --- END TEMPORARY DEBUGGING ---
-
-                # Attempt to read the specific columns
-                df_db_types = pd.read_excel(excel_file_path, usecols=["论文类型", "数据类型"])
-                st.success(f"Successfully loaded specified columns from '{excel_file_path}'")
+                # Read using the actual column names from your Excel file
+                # Assuming '论文类型' is correct and '数据类型' corresponds to the third column 'Unnamed: 2'
+                actual_cols_to_read = ["论文类型", "Unnamed: 2"] # Corrected based on debug
+                
+                df_temp = pd.read_excel(excel_file_path, usecols=actual_cols_to_read)
+                
+                # Rename the 'Unnamed: 2' column to '数据类型' for consistent use in the rest of the code
+                df_temp.rename(columns={"Unnamed: 2": "数据类型"}, inplace=True)
+                df_db_types = df_temp # Assign to the main DataFrame
+                
+                st.success(f"成功从 '{excel_file_path}' 加载并重命名列。")
 
             except FileNotFoundError:
                 st.error(f"错误：文件 '{excel_file_path}' 未找到。请确保文件路径和名称正确。")
             except ValueError as e:
                 st.error(f"错误：无法从 '{excel_file_path}' 读取指定的列。请检查文件列名。错误详情: {e}")
-                # For more detailed debugging of column names when ValueError occurs:
+                # Optional: keep this debug for future issues if column names change again
                 try:
                     temp_df_for_cols = pd.read_excel(excel_file_path, nrows=0)
-                    st.warning(f"DEBUG: Actual column names in Excel that caused ValueError: {temp_df_for_cols.columns.tolist()}")
+                    st.warning(f"DEBUG (ValueError): Excel 中的实际列名: {temp_df_for_cols.columns.tolist()}")
                 except Exception as ex_inner:
-                    st.warning(f"DEBUG: Could not read column names for debugging. Inner error: {ex_inner}")
+                    st.warning(f"DEBUG: 无法读取列名进行调试。内部错误: {ex_inner}")
             except Exception as e_general:
                 st.error(f"读取Excel文件时发生一般错误: {e_general}")
 
@@ -646,20 +642,20 @@ with tabs[0]:
                 paper_labels = paper_type_counts.index.tolist()
                 paper_values = paper_type_counts.values.tolist()
             else:
-                if "论文类型" not in df_db_types.columns and df_db_types.empty : # Only show if initial load likely failed
+                if "论文类型" not in df_db_types.columns and df_db_types.empty : 
                      st.info(f"列 '论文类型' 未找到或文件 '{excel_file_path}' 为空/读取失败。")
                 elif not paper_labels and not df_db_types.empty:
                      st.info("列 '论文类型' 在文件中无有效数据。")
             
             # Process "数据类型"
             data_type_labels, data_type_values = [], []
-            if "数据类型" in df_db_types.columns and not df_db_types["数据类型"].dropna().empty:
+            if "数据类型" in df_db_types.columns and not df_db_types["数据类型"].dropna().empty: # Now checking the renamed column
                 data_type_counts = df_db_types["数据类型"].dropna().value_counts()
                 data_type_labels = data_type_counts.index.tolist()
                 data_type_values = data_type_counts.values.tolist()
             else:
-                if "数据类型" not in df_db_types.columns and df_db_types.empty: # Only show if initial load likely failed
-                    st.info(f"列 '数据类型' 未找到或文件 '{excel_file_path}' 为空/读取失败。")
+                if "数据类型" not in df_db_types.columns and df_db_types.empty: 
+                    st.info(f"列 '数据类型' (或其原始列) 未找到或文件 '{excel_file_path}' 为空/读取失败。")
                 elif not data_type_labels and not df_db_types.empty:
                     st.info("列 '数据类型' 在文件中无有效数据。")
 
@@ -731,6 +727,7 @@ with tabs[0]:
                     st.pyplot(fig_data, use_container_width=True)
                 else:
                     st.markdown("<p style='color:white; text-align:center; font-size:12px; margin-top: 50px;'>无数据来源数据</p>", unsafe_allow_html=True)
+      
        
             # MODIFIED SECTION ENDS HERE
 
