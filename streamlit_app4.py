@@ -12,6 +12,7 @@ from bokeh.layouts import gridplot
 from bokeh.models import BoxSelectTool, LassoSelectTool
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib
+import matplotlib.font_manager as fm
 import seaborn as sns
 from PIL import Image
 from streamlit.components.v1 import html
@@ -24,9 +25,23 @@ from bokeh.transform import factor_cmap, factor_mark
 from openai import OpenAI
 
 # ---- FONT SETUP FOR MATPLOTLIB ----
-matplotlib.rc("font", family='YouYuan')
-font_msg = "Using 'YouYuan' font as default."
-print(font_msg)  # For logs
+font_path = "SimHei.ttf"  # Relative path from repository root
+font_msg = ""
+if os.path.exists(font_path):
+    try:
+        fm.fontManager.addfont(font_path)
+        plt.rcParams['font.sans-serif'] = ['SimHei'] + plt.rcParams['font.sans-serif']
+        font_msg = f"SimHei font loaded successfully from '{font_path}'."
+        print(font_msg)  # For logs
+    except Exception as e:
+        font_msg = f"Error loading SimHei font: {e}. Falling back to default font. Chinese characters may not display."
+        print(font_msg)  # For logs
+        plt.rcParams['font.sans-serif'] = ['sans-serif']  # Fallback to default
+else:
+    font_msg = f"SimHei.ttf not found at '{font_path}'. Falling back to default font. Chinese characters may not display."
+    print(font_msg)  # For logs
+    plt.rcParams['font.sans-serif'] = ['sans-serif']  # Fallback to default
+
 plt.rcParams['axes.unicode_minus'] = False  # Correctly display minus sign
 # ---- END FONT SETUP ----
 
@@ -61,7 +76,7 @@ html_code = """
     <title></title>
     <style>
         * {-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;}
-        *, body {padding: 0px;margin: 0px;color: white;font-family: "微软雅黑", "YouYuan", sans-serif;}
+        *, body {padding: 0px;margin: 0px;color: white;font-family: "微软雅黑", "SimHei", sans-serif;}
         @font-face {font-family: electronicFont;src: url(https://example.com/font/DS-DIGIT.TTF);}
         body {background: #08103f url(https://example.com/images/bg.jpg) center top;background-size: cover;color: #666;font-size: 0.1rem;line-height: 1.3;}
         li {list-style-type: none;}
@@ -329,6 +344,13 @@ with tabs[0]:
                     data_type_labels_all = data_type_counts.index.tolist()
                     data_type_values_all = data_type_counts.values.tolist()
 
+            simhei_font_prop = None
+            if os.path.exists(font_path):
+                try:
+                    simhei_font_prop = fm.FontProperties(fname=font_path)
+                except Exception as e:
+                    st.warning(f"Could not load FontProperties for SimHei: {e}")
+
             if data_load_success:
                 pie_col1, pie_col2 = st.columns(2)
                 chart_font_color = 'white'
@@ -345,6 +367,8 @@ with tabs[0]:
                         paper_colors = sns.color_palette("Blues_r", len(sorted_paper_labels))
 
                         pie_textprops = {'fontsize': 10, 'color': 'white'}
+                        if simhei_font_prop:
+                            pie_textprops['fontproperties'] = simhei_font_prop
 
                         wedges, texts, autotexts = ax_paper.pie(
                             sorted_paper_values,
@@ -357,11 +381,15 @@ with tabs[0]:
                         )
                         for autotext_item in autotexts:
                             autotext_item.set_color('black' if sum(paper_colors[autotexts.index(autotext_item)][:3]) / 3 > 0.6 else 'white')
+                            if simhei_font_prop:
+                                autotext_item.set_fontproperties(simhei_font_prop)
 
                         if sorted_paper_labels:
                             center_label_paper = sorted_paper_labels[0]
                             center_value_paper = (sorted_paper_values[0] / sum(sorted_paper_values)) * 100 if sum(sorted_paper_values) > 0 else 0
                             text_args_center = {'ha': 'center', 'va': 'center', 'color': chart_font_color, 'weight': 'bold'}
+                            if simhei_font_prop:
+                                text_args_center['fontproperties'] = simhei_font_prop
                             ax_paper.text(0, 0.1, f"{center_label_paper}", fontsize=12, **text_args_center)
                             ax_paper.text(0, -0.15, f"{center_value_paper:.1f}%", fontsize=14, **text_args_center)
 
@@ -370,7 +398,11 @@ with tabs[0]:
                             legend_labels_list = [f"{sorted_paper_labels[i]}" for i in range(1, min(len(sorted_paper_labels), 4))]
                             legend_wedges_list = wedges[1:min(len(wedges), 4)]
                             if legend_labels_list:
-                                legend_font_properties = {'size': 10}
+                                legend_font_properties = None
+                                if simhei_font_prop:
+                                    legend_font_properties = fm.FontProperties(fname=font_path, size=10)
+                                else:
+                                    legend_font_properties = {'size': 10}
                                 ax_paper.legend(legend_wedges_list, legend_labels_list,
                                                 loc="lower center", bbox_to_anchor=(0.5, -0.25),
                                                 labelcolor=chart_font_color, facecolor='none', edgecolor='none', ncol=2,
@@ -390,6 +422,8 @@ with tabs[0]:
                         data_type_colors = sns.color_palette("Greens_r", len(sorted_data_type_labels))
 
                         pie_textprops_data = {'fontsize': 10, 'color': 'white'}
+                        if simhei_font_prop:
+                            pie_textprops_data['fontproperties'] = simhei_font_prop
 
                         wedges_data, texts_data, autotexts_data = ax_data.pie(
                             sorted_data_type_values,
@@ -402,11 +436,15 @@ with tabs[0]:
                         )
                         for autotext_item in autotexts_data:
                             autotext_item.set_color('black' if sum(data_type_colors[autotexts_data.index(autotext_item)][:3]) / 3 > 0.6 else 'white')
+                            if simhei_font_prop:
+                                autotext_item.set_fontproperties(simhei_font_prop)
 
                         if sorted_data_type_labels:
                             center_label_data = sorted_data_type_labels[0]
                             center_value_data = (sorted_data_type_values[0] / sum(sorted_data_type_values)) * 100 if sum(sorted_data_type_values) > 0 else 0
                             text_args_center_data = {'ha': 'center', 'va': 'center', 'color': chart_font_color, 'weight': 'bold'}
+                            if simhei_font_prop:
+                                text_args_center_data['fontproperties'] = simhei_font_prop
                             ax_data.text(0, 0.1, f"{center_label_data}", fontsize=12, **text_args_center_data)
                             ax_data.text(0, -0.15, f"{center_value_data:.1f}%", fontsize=14, **text_args_center_data)
 
@@ -415,7 +453,11 @@ with tabs[0]:
                             legend_labels_list_2 = [f"{sorted_data_type_labels[i]}" for i in range(1, min(len(sorted_data_type_labels), 4))]
                             legend_wedges_list_2 = wedges_data[1:min(len(wedges_data), 4)]
                             if legend_labels_list_2:
-                                legend_font_properties_data = {'size': 10}
+                                legend_font_properties_data = None
+                                if simhei_font_prop:
+                                    legend_font_properties_data = fm.FontProperties(fname=font_path, size=10)
+                                else:
+                                    legend_font_properties_data = {'size': 10}
                                 ax_data.legend(legend_wedges_list_2, legend_labels_list_2,
                                                loc="lower center", bbox_to_anchor=(0.5, -0.25),
                                                labelcolor=chart_font_color, facecolor='none', edgecolor='none', ncol=2,
@@ -678,9 +720,9 @@ with tabs[1]:
                                 title="直方图与KDE密度图",
                                 plot_bgcolor='white', paper_bgcolor='white',
                                 margin=dict(l=50, r=50, t=50, b=50),
-                                xaxis=dict(title_text="数值", tickfont=dict(size=12, family='YouYuan', color='black'), linewidth=2, linecolor='black'),
-                                yaxis=dict(title_text="密度", tickfont=dict(size=12, family='YouYuan', color='black'), linewidth=2, linecolor='black'),
-                                legend=dict(x=0.01, y=0.99, bgcolor='rgba(255, 255, 255, 0.7)', bordercolor='#ddd', borderwidth=1, font=dict(size=12, color='#333', family='YouYuan'), itemsizing='constant')
+                                xaxis=dict(title_text="数值", tickfont=dict(size=12, family='SimHei' if simhei_font_prop else 'sans-serif', color='black'), linewidth=2, linecolor='black'),
+                                yaxis=dict(title_text="密度", tickfont=dict(size=12, family='SimHei' if simhei_font_prop else 'sans-serif', color='black'), linewidth=2, linecolor='black'),
+                                legend=dict(x=0.01, y=0.99, bgcolor='rgba(255, 255, 255, 0.7)', bordercolor='#ddd', borderwidth=1, font=dict(size=12, color='#333', family='SimHei' if simhei_font_prop else 'sans-serif'), itemsizing='constant')
                             )
                             st.plotly_chart(fig_hist, use_container_width=True)
                         except Exception as e:
@@ -796,7 +838,7 @@ with tabs[3]:
         if api_key_input:
             st.session_state.api_key = api_key_input
             st.success("API密钥已设置成功！请开始对话。")
-            st.experimental_rerun()
+            st.rerun()  # Changed from st.experimental_rerun()
         else:
             st.info("请输入您的DeepSeek API密钥以启用聊天功能.")
             st.stop()
@@ -835,7 +877,7 @@ with tabs[3]:
         except Exception as e:
             st.error(f"初始化 OpenAI 客户端时出错: {e}. 请检查您的 API 密钥和网络连接。")
             st.session_state.api_key = None
-            st.experimental_rerun()
+            st.rerun()  # Changed from st.experimental_rerun()
 
 with tabs[4]:
     st.markdown("### 操作示例说明")
